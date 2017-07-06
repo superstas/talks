@@ -1,0 +1,42 @@
+Pipelines in Go 
+Based on io.Reader/io.Writer
+21 Jul 2017
+
+Afanasev Stanislav
+Gopher, Juno
+@superstas88
+
+* io.Reader
+.code ./code/reader.go /0 OMIT/,/END 0 OMIT/
+
+Analogy for better understanding 
+.code ./code/reader.c
+
+Links:
+.html ./code/reader_links.html
+
+* io.Reader. Rule 1
+.code ./code/reader.go /1 OMIT/,/END 1 OMIT/
+// TODO ANY INFO? 
+
+* io.Reader. Rule 2
+.code ./code/reader.go /2 OMIT/,/END 2 OMIT/
+// TODO ANY INFO? 
+
+* io.Reader. Rule 3
+.code ./code/reader.go /3 OMIT/,/END 3 OMIT/
+// TODO ANY INFO? 
+
+* io.Reader. Rule 4
+.code ./code/reader.go /4 OMIT/,/END 4 OMIT/
+// TODO ANY INFO? 
+
+* io.Reader. Rule 5
+.code ./code/reader.go /5 OMIT/,/END 5 OMIT/
+// TODO ANY INFO? 
+
+* io.Writer 
+.code ./code/writer.go 
+// TODO ANY INFO? 
+
+
