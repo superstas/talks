@@ -1,4 +1,5 @@
 /**
+ * Analogue for better understanding
  * read()  attempts  to read up to count bytes from file descriptor fd into
  * the buffer starting at buf.
  */

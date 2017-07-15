@@ -6,37 +6,77 @@ Afanasev Stanislav
 Gopher, Juno
 @superstas88
 
+* Agenda
+
+- io.Reader
+- io.Writer
+- Pipelines ( _reader1|writer2|reader3|..._ )
+- Usage patterns
+- Implementations
+- Helpful examples
+
 * io.Reader
-.code ./code/reader.go /0 OMIT/,/END 0 OMIT/
 
-Analogy for better understanding 
-.code ./code/reader.c
+* io.Reader
+.code ./misc/reader.go /0 OMIT/,/END 0 OMIT/
+.image ./images/reader.png
 
-Links:
-.html ./code/reader_links.html
+.code ./misc/reader.c
+.link https://golang.org/src/io/io.go?s=3303:3363#L67 https://golang.org/src/io/io.go
 
-* io.Reader. Rule 1
-.code ./code/reader.go /1 OMIT/,/END 1 OMIT/
-// TODO ANY INFO? 
+* io.Reader#1
+.code ./misc/reader.go /1 OMIT/,/END 1 OMIT/
+- it's strict contract
+- _0<=n<=len(p)_ - one of the most important rule
+- client *believes* ( sometimes ) to an implementation
 
-* io.Reader. Rule 2
-.code ./code/reader.go /2 OMIT/,/END 2 OMIT/
-// TODO ANY INFO? 
+* io.Reader#1 - Example#1
+- ReaderOverflow
+.play -edit ./code/reader_overflow.go
 
-* io.Reader. Rule 3
-.code ./code/reader.go /3 OMIT/,/END 3 OMIT/
-// TODO ANY INFO? 
+* io.Reader#1 - Example#2
+- ReaderUnlimitedMemory
+.play ./code/reader_unlimited_memory.go
 
-* io.Reader. Rule 4
-.code ./code/reader.go /4 OMIT/,/END 4 OMIT/
-// TODO ANY INFO? 
+* io.Reader#1 - Example#3
+- ReaderInfinite
+.play ./code/reader_infinite.go
 
-* io.Reader. Rule 5
-.code ./code/reader.go /5 OMIT/,/END 5 OMIT/
-// TODO ANY INFO? 
+
+* io.Reader#2
+.code ./misc/reader.go /2 OMIT/,/END 2 OMIT/
+
+- *io.EOF* - "EOF is the error returned by Read when no more input is available"
+- *io.ErrUnexpectedEOF*
+- *io.ErrNoProgress* - "...usually the sign of a broken io.Reader implementation"
+
+* io.Reader#3
+.code ./misc/reader.go /3 OMIT/,/END 3 OMIT/
+- `return`0<=n<=len(p),`nil` - reading isn't finished, read again
+- `return`0<=n<=len(p),`io.EOF` - reading is finished
+- `return`0,`io.EOF` - reading is finished ( a special case )
+
+Examples:
+.link https://golang.org/src/bufio/bufio.go#L213 bufio.Reader ( it doesn't believe to implementations )
+.link https://golang.org/src/bytes/buffer.go#L179 bytes.Buffer ( it believes to implementations )
+
+* io.Reader#4
+.code ./misc/reader.go /4 OMIT/,/END 4 OMIT/
+- `return`0,`nil` - *isn't*equal* `io.EOF`
+- don't retain buffer, copy it if needed
 
 * io.Writer 
-.code ./code/writer.go 
-// TODO ANY INFO? 
+
+* io.Writer
+.code ./misc/writer.go
+.image ./images/writer.png
 
 
+* Implementations
+
+* Implementations. Stdlib. Circular dendrogram
+.image ./images/implementations_qr_code.gif
+.link https://superstas.github.io/gointerfaces.html https://superstas.github.io/gointerfaces.html
+
+* Implementations. Stdlib
+.image ./images/implementations.png
