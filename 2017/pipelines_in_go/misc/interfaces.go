@@ -3,8 +3,8 @@
 type Reader interface {
 	Read(p []byte) (n int, err error)
 }
-// END 0 OMIT
 
+// END 0 OMIT
 
 // 1 OMIT
 // Read reads up to len(p) bytes into p. It returns the number of bytes
@@ -15,8 +15,8 @@ type Reader interface {
 type Reader interface {
 	Read(p []byte) (n int, err error)
 }
-// END 1 OMIT
 
+// END 1 OMIT
 
 // 2 OMIT
 // When Read encounters an error or end-of-file condition after
@@ -30,6 +30,7 @@ type Reader interface {
 type Reader interface {
 	Read(p []byte) (n int, err error)
 }
+
 // END 2 OMIT
 
 // 3 OMIT
@@ -40,6 +41,7 @@ type Reader interface {
 type Reader interface {
 	Read(p []byte) (n int, err error)
 }
+
 // END 3 OMIT
 
 // 4 OMIT
@@ -52,12 +54,14 @@ type Reader interface {
 type Reader interface {
 	Read(p []byte) (n int, err error)
 }
+
 // END 4 OMIT
 
 // 5 OMIT
 type Reader interface {
 	Read(p []byte) (n int, err error)
 }
+
 // END 5 OMIT
 
 // 6 OMIT
@@ -73,6 +77,7 @@ type Reader interface {
 type Writer interface {
 	Write(p []byte) (n int, err error)
 }
+
 // END 6 OMIT
 
 // 7 OMIT
@@ -81,6 +86,7 @@ type Writer interface {
 type ReaderFrom interface {
 	ReadFrom(r Reader) (n int64, err error)
 }
+
 // END 7 OMIT
 
 // 8 OMIT
@@ -90,3 +96,17 @@ type WriterTo interface {
 	WriteTo(w Writer) (n int64, err error)
 }
 // END 8 OMIT
+
+// 9 OMIT
+func (l *LimitedReader) Read(p []byte) (n int, err error) {
+	if l.N <= 0 {
+		return 0, EOF
+	}
+	if int64(len(p)) > l.N {
+		p = p[0:l.N] // HL
+	}
+	n, err = l.R.Read(p)
+	l.N -= int64(n)
+	return
+}
+// END 9 OMIT

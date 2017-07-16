@@ -85,21 +85,36 @@ Examples:
 
 * reader1|reader2
 .code ./code/pipelines/readers/readers.go /1 OMIT/,/END 1 OMIT/
+- simple data container
+- returns data once
+
+* reader1|reader2
 .code ./code/pipelines/readers/readers.go /2 OMIT/,/END 2 OMIT/
+- wraps io.Reader
+- implements io.Reader
+- breaks even bytes
+
+* reader1|reader2
 .play ./code/pipelines/example1.go /3 OMIT/,/END 3 OMIT/
+.image ./images/gopher1.png
 
 * reader1|reader2|reader3
-- Limit broken data // TODO!!! Wrong limit!!!
-.play ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
-- Broke limited data
-.play ./code/pipelines/example3.go /1 OMIT/,/END 1 OMIT/
+.play -edit ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
+
+- wraps io.Reader
+- cuts off slice of bytes
+- reads limited amount of bytes
+.code ./misc/interfaces.go /9 OMIT/,/END 9 OMIT/
+
 
 * reader1|writer1
-- SimpleReader
-.code ./code/pipelines/readers/readers.go /1 OMIT/,/END 1 OMIT/
 - SimpleWriter
 .code ./code/pipelines/writers/writers.go /1 OMIT/,/END 1 OMIT/
-.play ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
+Wrong way
+.play -edit ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
+
+- simpleReader already has data
+- use `io.Copy` instead
 
 * WriterTo and ReaderFrom
 - WriterTo
@@ -107,6 +122,7 @@ Examples:
 - ReaderFrom
 .code ./misc/interfaces.go /8 OMIT/,/END 8 OMIT/
 .link https://golang.org/src/io/io.go?s=5697:6450#L163 GoDoc
+.image ./images/gopher2.png
 
 * reader1|writer1 - WriteTo
 - SimpleReader.WriteTo
@@ -144,3 +160,27 @@ Examples:
 
 * Find | Grep | Log | Compress | Save
 - Step 1: Find something and return io.Reader
+.code ./code/pipelines/example8.go /1 OMIT/,/END 1 OMIT/
+.code ./code/pipelines/example8.go /2 OMIT/,/END 2 OMIT/
+
+* Find | Grep | Log | Compress | Save
+- Step 2: Grep
+.code ./code/pipelines/example8.go /3 OMIT/,/END 3 OMIT/
+.link https://github.com/msoap/byline msoap/byline
+
+- Step 3: Log
+.code ./code/pipelines/example8.go /4 OMIT/,/END 4 OMIT/
+
+- Step 4: Compress and Save
+.code ./code/pipelines/example8.go /5 OMIT/,/END 5 OMIT/
+.play ./code/pipelines/example8.go /6 OMIT/,/END 6 OMIT/
+
+* Conclusions
+- implement io.Reader/io.Writer as needed
+- implement io.ReaderFrom/io.WriterTo to avoid redundant allocations
+- stdlib has good implementations
+
+.link https://golang.org/src/io/io.go https://golang.org/src/io/io.go
+.link https://golang.org/src/bytes/buffer.go https://golang.org/src/bytes/buffer.go
+.link https://golang.org/src/bytes/reader.go https://golang.org/src/bytes/reader.go
+.link https://golang.org/src/net/net.go#L177 https://golang.org/src/net/net.go

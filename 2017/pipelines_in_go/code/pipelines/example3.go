@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"io"
+	"io/ioutil"
+
 	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/readers"
 )
 

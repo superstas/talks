@@ -7,10 +7,10 @@ import (
 
 func main() {
 	// 1 OMIT
-	r := readers.SimpleReader("Hello GoWayFest")
-	w := writers.SimpleWriter("GoWayFestWriter")
-	buf := make([]byte, 16) // Wrong way! // HL
-	r.Read(buf)
-	w.Write(buf)
+	simpleReader := readers.SimpleReader("Hello GoWayFest")
+	simpleWriter := writers.SimpleWriter("GoWayFestWriter")
+	buf := make([]byte, 16) // redundant buffer // HL
+	simpleReader.Read(buf)
+	simpleWriter.Write(buf)
 	// END 1 OMIT
 }

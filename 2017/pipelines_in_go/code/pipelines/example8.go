@@ -1,14 +1,17 @@
 package main
 
 import (
-	"io"
-	"os/exec"
-	"github.com/msoap/byline"
-	"regexp"
-	"os"
 	"compress/gzip"
+	"io"
+	"log"
+	"os"
+	"os/exec"
+	"regexp"
+
+	"github.com/msoap/byline"
 )
 
+// 1 OMIT
 func CommandReader(cmd string, arg ...string) *commandReader {
 	return &commandReader{cmd: exec.Command(cmd, arg...)}
 }
@@ -27,16 +30,32 @@ func (r *commandReader) Read(p []byte) (int, error) {
 	return reader.Read(p)
 }
 
+// END 1 OMIT
+
 func main() {
+	// 2 OMIT
 	cmdReader := CommandReader("find", ".", "-name", "*.go", "-type", "f")
+	// END 2 OMIT
+
+	// 3 OMIT
 	lineReader := byline.NewReader(cmdReader).GrepByRegexp(regexp.MustCompile("example.*"))
+	// END 3 OMIT
+
+	// 4 OMIT
 	teeReader := io.TeeReader(lineReader, os.Stdout)
+	// END 4 OMIT
 
-	file, _ := os.Create("/tmp/gzipped_data")
+	// 5 OMIT
+	file, err := os.Create("/tmp/gzipped_data")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	// END 5 OMIT
 
+	// 6 OMIT
 	gzipWriter := gzip.NewWriter(file)
-	io.Copy(gzipWriter, teeReader)
+	io.Copy(gzipWriter, teeReader) // HL
 	gzipWriter.Close()
-	file.Close()
-	file.Close()
+	// END 6 OMIT
 }

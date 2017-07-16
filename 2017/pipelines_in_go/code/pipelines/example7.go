@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
+	"io"
+	"io/ioutil"
+
 	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/readers"
 	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/writers"
-	"io"
-	"fmt"
-	"io/ioutil"
-	"bufio"
 )
 
 func main() {
