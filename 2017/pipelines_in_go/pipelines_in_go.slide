@@ -18,14 +18,14 @@ Gopher, Juno
 * io.Reader
 
 * io.Reader
-.code ./misc/reader.go /0 OMIT/,/END 0 OMIT/
+.code ./misc/interfaces.go /0 OMIT/,/END 0 OMIT/
 .image ./images/reader.png
 
 .code ./misc/reader.c
 .link https://golang.org/src/io/io.go?s=3303:3363#L67 https://golang.org/src/io/io.go
 
 * io.Reader#1
-.code ./misc/reader.go /1 OMIT/,/END 1 OMIT/
+.code ./misc/interfaces.go /1 OMIT/,/END 1 OMIT/
 - it's strict contract
 - _0<=n<=len(p)_ - one of the most important rule
 - client *believes* ( sometimes ) to an implementation
@@ -44,14 +44,14 @@ Gopher, Juno
 
 
 * io.Reader#2
-.code ./misc/reader.go /2 OMIT/,/END 2 OMIT/
+.code ./misc/interfaces.go /2 OMIT/,/END 2 OMIT/
 
 - *io.EOF* - "EOF is the error returned by Read when no more input is available"
 - *io.ErrUnexpectedEOF*
 - *io.ErrNoProgress* - "...usually the sign of a broken io.Reader implementation"
 
 * io.Reader#3
-.code ./misc/reader.go /3 OMIT/,/END 3 OMIT/
+.code ./misc/interfaces.go /3 OMIT/,/END 3 OMIT/
 - `return`0<=n<=len(p),`nil` - reading isn't finished, read again
 - `return`0<=n<=len(p),`io.EOF` - reading is finished
 - `return`0,`io.EOF` - reading is finished ( a special case )
@@ -61,22 +61,86 @@ Examples:
 .link https://golang.org/src/bytes/buffer.go#L179 bytes.Buffer ( it believes to implementations )
 
 * io.Reader#4
-.code ./misc/reader.go /4 OMIT/,/END 4 OMIT/
+.code ./misc/interfaces.go /4 OMIT/,/END 4 OMIT/
 - `return`0,`nil` - *isn't*equal* `io.EOF`
 - don't retain buffer, copy it if needed
 
 * io.Writer 
 
 * io.Writer
-.code ./misc/writer.go
+.code ./misc/interfaces.go /6 OMIT/,/END 6 OMIT/
 .image ./images/writer.png
 
 
 * Implementations
 
-* Implementations. Stdlib. Circular dendrogram
+* Implementations of "io" pkg. Circular dendrogram
 .image ./images/implementations_qr_code.gif
 .link https://superstas.github.io/gointerfaces.html https://superstas.github.io/gointerfaces.html
 
-* Implementations. Stdlib
+* Implementations of "io" pkg. Stdlib
 .image ./images/implementations.png
+
+* Pipelines
+
+* reader1|reader2
+.code ./code/pipelines/readers/readers.go /1 OMIT/,/END 1 OMIT/
+.code ./code/pipelines/readers/readers.go /2 OMIT/,/END 2 OMIT/
+.play ./code/pipelines/example1.go /3 OMIT/,/END 3 OMIT/
+
+* reader1|reader2|reader3
+- Limit broken data // TODO!!! Wrong limit!!!
+.play ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
+- Broke limited data
+.play ./code/pipelines/example3.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1
+- SimpleReader
+.code ./code/pipelines/readers/readers.go /1 OMIT/,/END 1 OMIT/
+- SimpleWriter
+.code ./code/pipelines/writers/writers.go /1 OMIT/,/END 1 OMIT/
+.play ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
+
+* WriterTo and ReaderFrom
+- WriterTo
+.code ./misc/interfaces.go /7 OMIT/,/END 7 OMIT/
+- ReaderFrom
+.code ./misc/interfaces.go /8 OMIT/,/END 8 OMIT/
+.link https://golang.org/src/io/io.go?s=5697:6450#L163 GoDoc
+
+* reader1|writer1 - WriteTo
+- SimpleReader.WriteTo
+.code ./code/pipelines/readers/readers.go /3 OMIT/,/END 3 OMIT/
+- Go way
+.play ./code/pipelines/example5.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1 - ReadFrom
+- SimpleWriter.ReadFrom !!! //TODO OPTIMIZE IT
+.code ./code/pipelines/writers/writers.go /2 OMIT/,/END 2 OMIT/
+- Go way
+.play ./code/pipelines/example6.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1|reader2
+.play ./code/pipelines/example7.go /1 OMIT/,/END 1 OMIT/
+- can't use `io.Copy` instead of `io.TeeReader`
+- tee wrapped by `bufio.Reader`
+
+* Stdlib helpers
+- io.TeeReader
+- io.LimitReader
+- io.MultiReader - example
+- io.MultiWriter - example
+- io.Pipe - example
+
+* Custom implementations
+- https://github.com/davecheney/reader - Open anything as an io.Reader
+- https://github.com/andrewstuart/limio - shaper
+- https://github.com/msoap/byline - line-by-line io.Reader
+- https://github.com/mitchellh/ioprogress - progress bar for io.Reader
+- https://github.com/facebookgo/counting - bytes counting
+- https://github.com/disorganizer/brig/blob/master/util/std.go#L193 - Timeout read writer
+
+* Final example
+
+* Find | Grep | Log | Compress | Save
+- Step 1: Find something and return io.Reader

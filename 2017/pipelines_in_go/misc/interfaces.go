@@ -59,3 +59,34 @@ type Reader interface {
 	Read(p []byte) (n int, err error)
 }
 // END 5 OMIT
+
+// 6 OMIT
+// Writer is the interface that wraps the basic Write method.
+//
+// Write writes len(p) bytes from p to the underlying data stream.
+// It returns the number of bytes written from p (0 <= n <= len(p))
+// and any error encountered that caused the write to stop early.
+// Write must return a non-nil error if it returns n < len(p).
+// Write must not modify the slice data, even temporarily.
+//
+// Implementations must not retain p.
+type Writer interface {
+	Write(p []byte) (n int, err error)
+}
+// END 6 OMIT
+
+// 7 OMIT
+// ReaderFrom is the interface that wraps the ReadFrom method.
+// The Copy function uses ReaderFrom if available.
+type ReaderFrom interface {
+	ReadFrom(r Reader) (n int64, err error)
+}
+// END 7 OMIT
+
+// 8 OMIT
+// WriterTo is the interface that wraps the WriteTo method.
+// The Copy function uses WriterTo if available.
+type WriterTo interface {
+	WriteTo(w Writer) (n int64, err error)
+}
+// END 8 OMIT
