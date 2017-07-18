@@ -12,17 +12,15 @@ Gopher, Juno
 - io.Writer
 - Pipelines ( _reader1|writer2|reader3|..._ )
 - Usage patterns
-- Implementations
-- Helpful examples
+
+.image ./images/main_goal.png
+.caption Desired result
 
 * io.Reader
 
 * io.Reader
 .code ./misc/interfaces.go /0 OMIT/,/END 0 OMIT/
-.image ./images/reader.png
-
-.code ./misc/reader.c
-.link https://golang.org/src/io/io.go?s=3303:3363#L67 https://golang.org/src/io/io.go
+.image ./images/reader.gif
 
 * io.Reader#1
 .code ./misc/interfaces.go /1 OMIT/,/END 1 OMIT/
@@ -76,11 +74,12 @@ Examples:
 * Implementations
 
 * Implementations of "io" pkg. Circular dendrogram
-.image ./images/implementations_qr_code.gif
-.link https://superstas.github.io/gointerfaces.html https://superstas.github.io/gointerfaces.html
+.image ./images/implementations_qr_code.png
+.link https://superstas.github.io/io_interfaces.html https://superstas.github.io/io_interfaces.html
 
 * Implementations of "io" pkg. Stdlib
 .image ./images/implementations.png
+- WRONG bufio.Buffer!!!
 
 * Pipelines
 
