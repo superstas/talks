@@ -28,7 +28,8 @@ Gopher, Juno
 .code ./misc/interfaces.go /1 OMIT/,/END 1 OMIT/
 - it's strict contract
 - _0<=n<=len(p)_ - one of the most important rule
-- client *believes* ( sometimes ) to an implementation
+- caller *believes* ( sometimes ) to an implementation
+
 
 * io.Reader#1 - Example#1
 - ReaderOverflow
