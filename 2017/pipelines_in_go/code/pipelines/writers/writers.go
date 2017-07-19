@@ -3,7 +3,6 @@ package writers
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 )
 
@@ -18,17 +17,14 @@ func SimpleWriter(name string) *simpleWriter {
 }
 
 func (w *simpleWriter) Write(b []byte) (int, error) {
-	return fmt.Fprintf(os.Stdout, "%q wrote %d bytes: %v\n", w.name, len(b), b)
+	_, err := fmt.Fprintf(os.Stdout, "%q wrote %d bytes: %q\n", w.name, len(b), b)
+	return len(b), err
 }
 // END 1 OMIT
 
 // 2 OMIT
-func (w *simpleWriter) ReadFrom(r io.Reader) (int, error) {
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return 0, err
-	}
-	return fmt.Fprintf(os.Stdout, "%q wrote %d bytes via ReadFrom: %v\n", w.name, len(b), b)
+func (w *simpleWriter) ReadFrom(r io.Reader) (int64, error) {
+	return io.Copy(w, r)
 }
 
 // END 2 OMIT

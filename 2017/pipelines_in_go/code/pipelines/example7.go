@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -17,10 +16,10 @@ func main() {
 	// (reader1 | writer1) - teeReader
 	tee := io.TeeReader(r, w)
 
-	// teeReader|limitReader
-	lr := io.LimitReader(bufio.NewReader(tee), 10) // HL
+	// teeReader|BrokenReader
+	br := readers.BrokenReader(tee) // HL
 
-	res, err := ioutil.ReadAll(lr)
+	res, err := ioutil.ReadAll(br)
 	fmt.Printf("Result (%d bytes): %s\nError: %v\n", len(res), res, err)
 	// END 1 OMIT
 }

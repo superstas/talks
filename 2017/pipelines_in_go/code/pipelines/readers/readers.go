@@ -1,6 +1,8 @@
 package readers
 
-import "io"
+import (
+	"io"
+)
 
 type simpleReader struct {
 	data []byte
@@ -13,15 +15,19 @@ func SimpleReader(s string) *simpleReader {
 
 func (r *simpleReader) Read(p []byte) (int, error) {
 	n := copy(p, r.data) // HL
-	r.data = r.data[:0]  // HL
-	return n, io.EOF
+	// todo: partial read support
+	// todo: check limitations
+	r.data = r.data[n:] // HL
+	return n, io.EOF    // read finished
 }
 
 // END 1 OMIT
 
 // 3 OMIT
-func (r *simpleReader) WriteTo(w io.Writer) (int, error) {
-	return w.Write(r.data)
+func (r *simpleReader) WriteTo(w io.Writer) (int64, error) {
+	n, err := w.Write(r.data) // HL
+	r.data = r.data[n:]
+	return int64(n), err
 }
 
 // END 3 OMIT
@@ -35,18 +41,18 @@ func BrokenReader(r io.Reader) io.Reader {
 	return &brokenReader{r}
 }
 
+// END 2 OMIT
+
+// 2_1 OMIT
 func (r *brokenReader) Read(p []byte) (int, error) {
 	n, err := r.Reader.Read(p)
-	if err != nil && err != io.EOF {
-		return 0, err
-	}
+	// todo: check errors, add partial read support
 	for i := 0; i < n; i++ {
-		if i%2 == 0 {
-			continue
+		if i%2 != 0 {
+			p[i] = byte('#') // HL
 		}
-		p[i] = byte('#') // HL
 	}
 	return n, err
 }
 
-// END 2 OMIT
+// END 2_1 OMIT
