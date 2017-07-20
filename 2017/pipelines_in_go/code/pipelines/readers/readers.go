@@ -16,7 +16,6 @@ func SimpleReader(s string) *simpleReader {
 func (r *simpleReader) Read(p []byte) (int, error) {
 	n := copy(p, r.data) // HL
 	// todo: partial read support
-	// todo: check limitations
 	r.data = r.data[n:] // HL
 	return n, io.EOF    // read finished
 }

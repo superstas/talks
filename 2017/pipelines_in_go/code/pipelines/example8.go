@@ -9,6 +9,7 @@ import (
 	"regexp"
 
 	"github.com/msoap/byline"
+	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/writers"
 )
 
 // 1 OMIT
@@ -42,7 +43,7 @@ func main() {
 	// END 3 OMIT
 
 	// 4 OMIT
-	teeReader := io.TeeReader(lineReader, os.Stdout)
+	teeReader := io.TeeReader(lineReader, writers.SimpleWriter("LogWriter"))
 	// END 4 OMIT
 
 	// 5 OMIT
@@ -54,7 +55,7 @@ func main() {
 	// END 5 OMIT
 
 	// 6 OMIT
-	gzipWriter := gzip.NewWriter(file)
+	gzipWriter := gzip.NewWriter(io.MultiWriter(file, writers.SimpleWriter("GzipLogger")))
 	io.Copy(gzipWriter, teeReader) // HL
 	gzipWriter.Close()
 	// END 6 OMIT

@@ -62,12 +62,15 @@ Examples:
 - `return`0,`nil` - *isn't*equal* `io.EOF`
 - don't retain buffer, copy it if needed
 
+ return 0<=n<=len(p), nil - reading is not finished, read again		
+ return 0<=n<=len(p), io.EOF - reading is finished		
+ return 0, io.EOF - reading is finished ( a special case )
+
 * io.Writer 
 
 * io.Writer
 .code ./misc/interfaces.go /6 OMIT/,/END 6 OMIT/
-.image ./images/writer.png
-ANIMATION !!!
+.image ./images/writer.gif
 
 * io.Writer
 .code ./misc/interfaces.go /6_1 OMIT/,/END 6_1 OMIT/
@@ -82,9 +85,6 @@ ANIMATION !!!
 * Implementations of "io" pkg. Circular dendrogram
 .image ./images/implementations_qr_code.png
 .link https://superstas.github.io/io_interfaces.html https://superstas.github.io/io_interfaces.html
-
-* Implementations of "io" pkg. Stdlib
-.image ./images/implementations.png
 
 * Pipelines
 
@@ -129,7 +129,7 @@ Wrong way
 * reader1|writer1 - WriteTo
 - SimpleReader.WriteTo
 .code ./code/pipelines/readers/readers.go /3 OMIT/,/END 3 OMIT/
-- True way
+- Go way
 .play -edit ./code/pipelines/example5.go /1 OMIT/,/END 1 OMIT/
 
 * reader1|writer1 - ReadFrom
@@ -146,12 +146,11 @@ Wrong way
 - can't use `io.Copy` instead of `io.TeeReader`
 - tee wrapped by `readers.BrokenReader`
 
-* Stdlib helpers
+* Implementations in "io" package
+- io.MultiReader
+- io.MultiWriter
 - io.TeeReader
 - io.LimitReader
-- io.MultiReader - example gif
-- io.MultiWriter - example gif
-- io.Pipe - example ?
 
 * Final example
 
@@ -171,18 +170,18 @@ Wrong way
 .code ./code/pipelines/example8.go /5 OMIT/,/END 5 OMIT/
 .play ./code/pipelines/example8.go /6 OMIT/,/END 6 OMIT/
 
-* Custom implementations
-- https://github.com/davecheney/reader - Open anything as an io.Reader
-- https://github.com/andrewstuart/limio - shaper
-- https://github.com/msoap/byline - line-by-line io.Reader
-- https://github.com/mitchellh/ioprogress - progress bar for io.Reader
-- https://github.com/facebookgo/counting - bytes counting
-- https://github.com/disorganizer/brig/blob/master/util/std.go#L193 - Timeout read writer
+* Other implementations
+.link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
+.link https://github.com/mitchellh/ioprogress https://github.com/mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
+.link https://github.com/davecheney/reader https://github.com/davecheney/reader - Open anything as an io.Reader
+.link https://github.com/andrewstuart/limio https://github.com/andrewstuart/limio - A rate limiting library
+.link https://github.com/facebookgo/counting https://github.com/facebookgo/counting - Counting for io.Reader/io.Writer
+.link https://github.com/disorganizer/brig/blob/master/util/std.go#L193 TimeoutReaderWriter 
 
 * Conclusions
 - implement io.Reader/io.Writer as needed
 - implement io.ReaderFrom/io.WriterTo to avoid redundant allocations
-- read manuals
+- read documentations 
 - stdlib has good implementations
 
 Links:

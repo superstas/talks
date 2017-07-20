@@ -70,8 +70,8 @@ type Reader interface {
 type Writer interface {
 	Write(p []byte) (n int, err error)
 }
-// END 6 OMIT
 
+// END 6 OMIT
 
 // 6_1 OMIT
 // Write writes len(p) bytes from p to the underlying data stream.
@@ -86,8 +86,8 @@ type Writer interface {
 type Writer interface {
 	Write(p []byte) (n int, err error)
 }
-// END 6_1 OMIT
 
+// END 6_1 OMIT
 
 // 7 OMIT
 // WriterTo is the interface that wraps the WriteTo method.
@@ -101,6 +101,7 @@ type WriterTo interface {
 type ReaderFrom interface {
 	ReadFrom(r Reader) (n int64, err error)
 }
+
 // END 7 OMIT
 
 // 9 OMIT
@@ -115,4 +116,5 @@ func (l *LimitedReader) Read(p []byte) (n int, err error) {
 	l.N -= int64(n)
 	return
 }
+
 // END 9 OMIT

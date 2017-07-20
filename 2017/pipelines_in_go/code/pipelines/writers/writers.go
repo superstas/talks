@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-
 type simpleWriter struct {
 	name string
 }
@@ -17,9 +16,10 @@ func SimpleWriter(name string) *simpleWriter {
 }
 
 func (w *simpleWriter) Write(b []byte) (int, error) {
-	_, err := fmt.Fprintf(os.Stdout, "%q wrote %d bytes: %q\n", w.name, len(b), b)
+	_, err := fmt.Fprintf(os.Stdout, "%q recorded %d bytes: %q\n", w.name, len(b), b)
 	return len(b), err
 }
+
 // END 1 OMIT
 
 // 2 OMIT
