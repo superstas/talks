@@ -9,7 +9,7 @@ import (
 	"regexp"
 
 	"github.com/msoap/byline"
-	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/writers"
+	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/writers"
 )
 
 // 1 OMIT

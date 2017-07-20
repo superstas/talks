@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/readers"
-	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/writers"
+	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/readers"
+	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/writers"
 )
 
 func main() {

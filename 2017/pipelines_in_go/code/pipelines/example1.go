@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/superstas/future_talks/2017/pipelines_in_go/code/pipelines/readers"
+	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/readers"
 )
 
 func main() {
