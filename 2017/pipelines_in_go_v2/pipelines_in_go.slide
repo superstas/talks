@@ -1,0 +1,190 @@
+Pipelines in Go 
+Based on io.Reader/io.Writer
+14 Oct 2017
+
+Afanasev Stanislav
+Gopher, Juno
+@superstas88
+
+* Agenda
+
+- io.Reader
+- io.Writer
+- Pipelines ( _reader1|writer2|reader3|..._ )
+- Usage patterns
+
+.image ./images/gopher_0.png
+
+* io.Reader
+
+* io.Reader
+.code ./misc/interfaces.go /0 OMIT/,/END 0 OMIT/
+.image ./images/reader.gif
+
+* io.Reader#1
+.code ./misc/interfaces.go /1 OMIT/,/END 1 OMIT/
+- _0<=n<=len(p)_ - one of the most important rule
+- it's strict contract
+- caller *believes* ( sometimes ) to an implementation
+.link https://golang.org/src/bytes/buffer.go?s=6290:6338#L180 bytes.Buffer
+
+* io.Reader#1 - Example#1
+- ReaderOverflow
+.play -edit ./code/reader_overflow.go
+
+* io.Reader#1 - Example#2
+- ReaderUnlimitedMemory
+.play ./code/reader_unlimited_memory.go
+
+* io.Reader#1 - Example#3
+- ReaderInfinite
+.play ./code/reader_infinite.go
+
+
+* io.Reader#2
+.code ./misc/interfaces.go /2 OMIT/,/END 2 OMIT/
+
+- *io.EOF* - "EOF is the error returned by Read when no more input is available"
+- *io.ErrUnexpectedEOF*
+- *io.ErrNoProgress* - "...usually the sign of a broken io.Reader implementation"
+
+* io.Reader#3
+.code ./misc/interfaces.go /3 OMIT/,/END 3 OMIT/
+- check read bytes before error handling
+
+Examples:
+.link https://golang.org/src/bufio/bufio.go#L213 bufio.Reader
+.link https://golang.org/src/bytes/buffer.go#L179 bytes.Buffer
+
+* io.Reader#4
+.code ./misc/interfaces.go /4 OMIT/,/END 4 OMIT/
+- `return`0,`nil` - *isn't*equal* `io.EOF`
+- don't retain buffer, copy it if needed
+
+ return 0<=n<=len(p), nil - reading is not finished, read again		
+ return 0<=n<=len(p), io.EOF - reading is finished		
+ return 0, io.EOF - reading is finished ( a special case )
+
+* io.Writer 
+
+* io.Writer
+.code ./misc/interfaces.go /6 OMIT/,/END 6 OMIT/
+.image ./images/writer.gif
+
+* io.Writer
+.code ./misc/interfaces.go /6_1 OMIT/,/END 6_1 OMIT/
+- _0<=n<=len(p)_ - n - written bytes
+- writer must return error if it returns n < len(p)
+- writer mustn't modify p
+- don't retain buffer, copy it if needed
+
+
+* Implementations
+
+* Implementations of "io" pkg. Circular dendrogram
+.image ./images/implementations_qr_code.png
+.link https://superstas.github.io/io_interfaces.html https://superstas.github.io/io_interfaces.html
+
+* Pipelines
+
+* reader1|reader2
+.code ./code/pipelines/readers/readers.go /1 OMIT/,/END 1 OMIT/
+- simple data container
+- returns data once
+
+* reader1|reader2
+.code ./code/pipelines/readers/readers.go /2 OMIT/,/END 2 OMIT/
+.code ./code/pipelines/readers/readers.go /2_1 OMIT/,/END 2_1 OMIT/
+- wraps io.Reader
+- breaks even bytes
+- implements io.Reader
+
+* reader1|reader2
+.play ./code/pipelines/example1.go /3 OMIT/,/END 3 OMIT/
+.image ./images/gopher1.png
+
+* reader1|reader2|reader3
+.play -edit ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
+- io.LimitedReader wraps io.Reader
+- reads limited amount of bytes
+.code ./misc/interfaces.go /9 OMIT/,/END 9 OMIT/
+
+
+* reader1|writer1
+- SimpleWriter
+.code ./code/pipelines/writers/writers.go /1 OMIT/,/END 1 OMIT/
+Wrong way
+.play -edit ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
+
+- use `io.Copy`/`io.CopyBuffer`/`io.CopyN` instead
+- simpleReader already has data
+
+* WriterTo and ReaderFrom
+.code ./misc/interfaces.go /7 OMIT/,/END 7 OMIT/
+.link https://golang.org/src/io/io.go?s=5697:6450#L163 GoDoc
+.link https://golang.org/src/io/io.go#L379 io.Copy
+.image ./images/gopher2.png
+
+* reader1|writer1 - WriteTo
+- SimpleReader.WriteTo
+.code ./code/pipelines/readers/readers.go /3 OMIT/,/END 3 OMIT/
+- Go way
+.play -edit ./code/pipelines/example5.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1 - ReadFrom
+- SimpleWriter.ReadFrom
+.code ./code/pipelines/writers/writers.go /2 OMIT/,/END 2 OMIT/
+- Go way
+.play ./code/pipelines/example6.go /1 OMIT/,/END 1 OMIT/
+.link https://golang.org/src/bufio/bufio.go#L696 bufio.Bufio ( avoids allocs )
+.link https://golang.org/src/bytes/buffer.go#L167 bytes.Buffer ( avoids allocs )
+.link https://golang.org/src/net/tcpsock.go?s=2001:2055#L84 net.TCPConn ( uses io.Copy when sendfile isn't applicable )
+
+* reader1|writer1|reader2
+.play ./code/pipelines/example7.go /1 OMIT/,/END 1 OMIT/
+- can't use `io.Copy` instead of `io.TeeReader`
+- tee wrapped by `readers.BrokenReader`
+
+* Implementations in "io" package
+- io.MultiReader
+- io.MultiWriter
+- io.TeeReader
+- io.LimitReader
+
+* Final example
+
+* Find | Grep | Log | Compress | Save
+- Step 1: Find something and return io.Reader
+.code ./code/pipelines/example8.go /1 OMIT/,/END 1 OMIT/
+.code ./code/pipelines/example8.go /2 OMIT/,/END 2 OMIT/
+
+* Find | Grep | Log | Compress | Save
+- Step 2: Grep
+.code ./code/pipelines/example8.go /3 OMIT/,/END 3 OMIT/
+
+- Step 3: Log
+.code ./code/pipelines/example8.go /4 OMIT/,/END 4 OMIT/
+
+- Step 4: Compress and Save
+.code ./code/pipelines/example8.go /5 OMIT/,/END 5 OMIT/
+.play ./code/pipelines/example8.go /6 OMIT/,/END 6 OMIT/
+
+* Other implementations
+.link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
+.link https://github.com/mitchellh/ioprogress https://github.com/mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
+.link https://github.com/davecheney/reader https://github.com/davecheney/reader - Open anything as an io.Reader
+.link https://github.com/andrewstuart/limio https://github.com/andrewstuart/limio - A rate limiting library
+.link https://github.com/facebookgo/counting https://github.com/facebookgo/counting - Counting for io.Reader/io.Writer
+.link https://github.com/disorganizer/brig/blob/master/util/std.go#L193 TimeoutReaderWriter 
+
+* Conclusions
+- implement io.Reader/io.Writer as needed
+- implement io.ReaderFrom/io.WriterTo to avoid redundant allocations
+- read documentations 
+- stdlib has good implementations
+
+Links:
+.link https://golang.org/src/io/io.go https://golang.org/src/io/io.go
+.link https://golang.org/src/bytes/buffer.go https://golang.org/src/bytes/buffer.go
+.link https://golang.org/src/bytes/reader.go https://golang.org/src/bytes/reader.go
+.link https://golang.org/src/net/net.go#L177 https://golang.org/src/net/net.go
