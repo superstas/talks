@@ -21,24 +21,40 @@ Gopher, Juno
 .code ./misc/interfaces.go /0 OMIT/,/END 0 OMIT/
 .image ./images/reader.gif
 
+* io.Reader - Why?
+1. Why not bytes.Buffer?
+
+2. The most popular categories:
+
+- wrappers ( stats, metrics, progress, modification, etc. )
+- custom buffers with complex logic
+- encrypters/decrypters
+
+
+Based on more than 500 custom readers:
+.link https://superstas.github.io/io_stats/
+
 * io.Reader#1
 .code ./misc/interfaces.go /1 OMIT/,/END 1 OMIT/
+- it's a strict contract!
 - _0<=n<=len(p)_ - one of the most important rule
-- it's strict contract
-- caller *believes* ( sometimes ) to an implementation
-.link https://golang.org/src/bytes/buffer.go?s=6290:6338#L180 bytes.Buffer
+- stdlib wrappers *believe* ( sometimes ) to implementations
 
-* io.Reader#1 - Example#1
+Examples:
+.link https://golang.org/src/bytes/buffer.go#L210 bytes.Buffer believes
+.link https://golang.org/src/bufio/bufio.go#L200 bufio.Reader doesn't believe
+
+
+* io.Reader#1 - Examples
 - ReaderOverflow
-.play -edit ./code/reader_overflow.go
+.code ./code/reader_infinite.go /1 OMIT/,/END 1 OMIT/
+.play -edit ./code/reader_overflow.go /0 OMIT/,/END 0 OMIT/
 
-* io.Reader#1 - Example#2
 - ReaderUnlimitedMemory
-.play ./code/reader_unlimited_memory.go
+.play ./code/reader_unlimited_memory.go /0 OMIT/,/END 0 OMIT/
 
-* io.Reader#1 - Example#3
 - ReaderInfinite
-.play ./code/reader_infinite.go
+.play ./code/reader_infinite.go /0 OMIT/,/END 0 OMIT/
 
 
 * io.Reader#2
@@ -49,23 +65,30 @@ Gopher, Juno
 - *io.ErrNoProgress* - "...usually the sign of a broken io.Reader implementation"
 
 * io.Reader#3
-.code ./misc/interfaces.go /3 OMIT/,/END 3 OMIT/
-- check read bytes before error handling
-
-Examples:
-.link https://golang.org/src/bufio/bufio.go#L213 bufio.Reader
-.link https://golang.org/src/bytes/buffer.go#L179 bytes.Buffer
-
-* io.Reader#4
 .code ./misc/interfaces.go /4 OMIT/,/END 4 OMIT/
-- `return`0,`nil` - *isn't*equal* `io.EOF`
-- don't retain buffer, copy it if needed
+- `return`0,`nil` - *isn't*equal*to* `io.EOF`
 
  return 0<=n<=len(p), nil - reading is not finished, read again		
  return 0<=n<=len(p), io.EOF - reading is finished		
  return 0, io.EOF - reading is finished ( a special case )
 
-* io.Writer 
+* io.Reader. Mistakes
+
+1. Is there actually a problem here?
+
+- "no readers, no problems"
+
+2. The most common mistakes
+
+- returning nil error always
+- trust in wrapped io.Reader
+- common logic mistakes
+
+
+Based on more than 500 custom readers:
+.link https://superstas.github.io/io_stats/
+
+* io.Writer
 
 * io.Writer
 .code ./misc/interfaces.go /6 OMIT/,/END 6 OMIT/
@@ -83,7 +106,7 @@ Examples:
 
 * Implementations of "io" pkg. Circular dendrogram
 .image ./images/implementations_qr_code.png
-.link https://superstas.github.io/io_interfaces.html https://superstas.github.io/io_interfaces.html
+.link https://superstas.github.io/io_interfaces_1.9.html https://superstas.github.io/io_interfaces_1.9.html
 
 * Pipelines
 
