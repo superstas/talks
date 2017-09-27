@@ -80,7 +80,7 @@ Examples:
 
 2. The most common mistakes
 
-- returning nil error always
+- always returning nil error
 - trust in wrapped io.Reader
 - common logic mistakes
 
