@@ -110,69 +110,51 @@ Based on more than 500 custom readers:
 
 * Pipelines
 
-* reader1|reader2
+* reader1|reader2 - stdin data
+- os.Stdin is a *os.File that implements io.Reader
 .code ./code/pipelines/readers/readers.go /1 OMIT/,/END 1 OMIT/
-- simple data container
-- returns data once
 
-* reader1|reader2
-.code ./code/pipelines/readers/readers.go /2 OMIT/,/END 2 OMIT/
-.code ./code/pipelines/readers/readers.go /2_1 OMIT/,/END 2_1 OMIT/
-- wraps io.Reader
-- breaks even bytes
-- implements io.Reader
+- read stdin via ioutil.ReadAll(io.Reader)
+.play ./code/pipelines/example0.go /1 OMIT/,/END 1 OMIT/
 
-* reader1|reader2
-.play ./code/pipelines/example1.go /3 OMIT/,/END 3 OMIT/
-.image ./images/gopher1.png
 
-* reader1|reader2|reader3
-.play -edit ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
+* reader1|reader2 - stdin data limitation
 - io.LimitedReader wraps io.Reader
-- reads limited amount of bytes
+- it reads limited amount of bytes
 .code ./misc/interfaces.go /9 OMIT/,/END 9 OMIT/
 
+- read limited stdin data
+.play ./code/pipelines/example1.go /1 OMIT/,/END 1 OMIT/
 
-* reader1|writer1
-- SimpleWriter
-.code ./code/pipelines/writers/writers.go /1 OMIT/,/END 1 OMIT/
-Wrong way
-.play -edit ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
+* reader1|writer1 - TeeReader
+- io.TeeReader
+.play ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
 
-- use `io.Copy`/`io.CopyBuffer`/`io.CopyN` instead
-- simpleReader already has data
+* reader1|writer1 - Only writing
+- Beginner way
+.play ./code/pipelines/example3.go /1 OMIT/,/END 1 OMIT/
 
-* WriterTo and ReaderFrom
+* reader1|writer1 - io.Copy
+- use `io.Copy`/`io.CopyBuffer`/`io.CopyN`
+- `io.Copy` creates 32kb buffer by default
+.play ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1 - WriterTo and ReaderFrom
 .code ./misc/interfaces.go /7 OMIT/,/END 7 OMIT/
 .link https://golang.org/src/io/io.go?s=5697:6450#L163 GoDoc
 .link https://golang.org/src/io/io.go#L379 io.Copy
+
 .image ./images/gopher2.png
 
-* reader1|writer1 - WriteTo
-- SimpleReader.WriteTo
-.code ./code/pipelines/readers/readers.go /3 OMIT/,/END 3 OMIT/
-- Go way
-.play -edit ./code/pipelines/example5.go /1 OMIT/,/END 1 OMIT/
+* writer1|reader1
+- `io.Pipe`rocks
+#TODO Pipe image
 
-* reader1|writer1 - ReadFrom
-- SimpleWriter.ReadFrom
-.code ./code/pipelines/writers/writers.go /2 OMIT/,/END 2 OMIT/
-- Go way
-.play ./code/pipelines/example6.go /1 OMIT/,/END 1 OMIT/
-.link https://golang.org/src/bufio/bufio.go#L696 bufio.Bufio ( avoids allocs )
-.link https://golang.org/src/bytes/buffer.go#L167 bytes.Buffer ( avoids allocs )
-.link https://golang.org/src/net/tcpsock.go?s=2001:2055#L84 net.TCPConn ( uses io.Copy when sendfile isn't applicable )
+#TODO Read data|Gzip|Upload
+Diff between bytes.Buffer and io.Pipe
 
-* reader1|writer1|reader2
-.play ./code/pipelines/example7.go /1 OMIT/,/END 1 OMIT/
-- can't use `io.Copy` instead of `io.TeeReader`
-- tee wrapped by `readers.BrokenReader`
-
-* Implementations in "io" package
-- io.MultiReader
-- io.MultiWriter
-- io.TeeReader
-- io.LimitReader
+#.play ./code/pipelines/example1.go /3 OMIT/,/END 3 OMIT/
+.image ./images/gopher1.png
 
 * Final example
 

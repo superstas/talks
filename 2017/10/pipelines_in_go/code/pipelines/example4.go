@@ -1,16 +1,32 @@
 package main
 
 import (
-	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/readers"
-	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/writers"
+	"fmt"
+
+	"io"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
+	f, err := os.Create("/tmp/5")
+	defer f.Close()
+	if err != nil {
+		log.Fatal("failed to create file: ", err)
+	}
+
 	// 1 OMIT
-	simpleReader := readers.SimpleReader("Hello GoWayFest")
-	simpleWriter := writers.SimpleWriter("GoWayFestWriter")
-	buf := make([]byte, 16) // redundant buffer // HL
-	simpleReader.Read(buf)
-	simpleWriter.Write(buf)
+	c, err := http.Get("https://golang.org/robots.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer c.Body.Close()
+
+	n, err := io.Copy(f, c.Body) // HL
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%d bytes was written", n)
 	// END 1 OMIT
 }

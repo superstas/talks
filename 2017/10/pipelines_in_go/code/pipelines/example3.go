@@ -2,16 +2,40 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 
-	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/readers"
+	"io"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
+	f, err := os.Create("/tmp/4")
+	defer f.Close()
+	if err != nil {
+		log.Fatal("failed to create file: ", err)
+	}
+
 	// 1 OMIT
-	r := readers.BrokenReader(io.LimitReader(readers.SimpleReader("Hello GoWayFest"), 5)) // HL
-	res, err := ioutil.ReadAll(r)
-	fmt.Printf("Result: %s\nError: %v\n", res, err)
+	c, err := http.Get("https://golang.org/robots.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer c.Body.Close()
+
+	// wrong way :(
+	buf := make([]byte, 128)
+	n, err := c.Body.Read(buf)
+	if err != nil && err != io.EOF {
+		log.Fatal(err)
+	}
+	// there is a better way
+	fmt.Printf("%d bytes was read\n", n)
+
+	n, err = f.Write(buf[:n])
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%d bytes was written", n)
 	// END 1 OMIT
 }

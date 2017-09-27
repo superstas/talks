@@ -4,16 +4,27 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-
-	"github.com/superstas/talks/2017/pipelines_in_go/code/pipelines/readers"
+	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
+	f, err := os.Create("/tmp/3")
+	defer f.Close()
+	if err != nil {
+		log.Fatal("failed to create file: ", err)
+	}
+
 	// 1 OMIT
-	simpleReader := readers.SimpleReader("Hello GoWayFest")
-	brokenReader := readers.BrokenReader(simpleReader)
-	limitReader := io.LimitReader(brokenReader, 5) // HL
-	res, err := ioutil.ReadAll(limitReader)
-	fmt.Printf("Result: %s\nError: %v\n", res, err)
+	c, err := http.Get("https://golang.org/robots.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer c.Body.Close()
+
+	r := io.TeeReader(c.Body, f) // HL
+	resp, err := ioutil.ReadAll(r)
+	fmt.Printf("###\n%s###\n", resp)
 	// END 1 OMIT
 }
