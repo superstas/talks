@@ -74,11 +74,13 @@ Examples:
 
 * io.Reader. Mistakes
 
-1. Is there actually a problem here?
+Is there actually a problem here?
 
 - "no readers, no problems"
 
-2. The most common mistakes
+* io.Reader. Mistakes
+
+The most common mistakes
 
 - always returning nil error
 - trust in wrapped io.Reader
@@ -147,32 +149,29 @@ Based on more than 500 custom readers:
 .image ./images/gopher2.png
 
 * writer1|reader1
-- `io.Pipe`rocks
-#TODO Pipe image
+Let's imagine a case
 
-#TODO Read data|Gzip|Upload
+1. We have a peace of data
+
+- io.Reader
+
+2. We need compress it with compress/gzip
+
+- `compress/gzip` requires io.Writer, implements io.Writer
+
+3. We need to upload it to AWS S3
+
+- `aws-sdk-go` requires io.Reader as a body
+
+* writer1|reader1 - io.Pipe rocks
+#TODO Pipe image
+.play ./code/pipelines/example6.go /1 OMIT/,/END 1 OMIT/
+
 Diff between bytes.Buffer and io.Pipe
 
-#.play ./code/pipelines/example1.go /3 OMIT/,/END 3 OMIT/
 .image ./images/gopher1.png
 
 * Final example
-
-* Find | Grep | Log | Compress | Save
-- Step 1: Find something and return io.Reader
-.code ./code/pipelines/example8.go /1 OMIT/,/END 1 OMIT/
-.code ./code/pipelines/example8.go /2 OMIT/,/END 2 OMIT/
-
-* Find | Grep | Log | Compress | Save
-- Step 2: Grep
-.code ./code/pipelines/example8.go /3 OMIT/,/END 3 OMIT/
-
-- Step 3: Log
-.code ./code/pipelines/example8.go /4 OMIT/,/END 4 OMIT/
-
-- Step 4: Compress and Save
-.code ./code/pipelines/example8.go /5 OMIT/,/END 5 OMIT/
-.play ./code/pipelines/example8.go /6 OMIT/,/END 6 OMIT/
 
 * Other implementations
 .link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
