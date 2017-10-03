@@ -21,10 +21,11 @@ Gopher, Juno
 .code ./misc/interfaces.go /0 OMIT/,/END 0 OMIT/
 .image ./images/reader.gif
 
-* io.Reader - Why?
-1. Why not bytes.Buffer?
+* io.Reader - How to?
+1. One of stdlib impl. ( e.g. bytes.Buffer )
+2. Own implementation
 
-2. The most popular categories:
+The most popular categories:
 
 - wrappers ( stats, metrics, progress, modification, etc. )
 - custom buffers with complex logic
@@ -151,7 +152,7 @@ Based on more than 500 custom readers:
 * writer1|reader1
 Let's imagine a case
 
-1. We have a peace of data
+1. We have a piece of data
 
 - io.Reader
 
