@@ -90,13 +90,19 @@ type Writer interface {
 // END 6_1 OMIT
 
 // 7 OMIT
-// WriterTo is the interface that wraps the WriteTo method.
+// WriteTo writes data to w until there's no more data to write or
+// when an error occurs. The return value n is the number of bytes
+// written. Any error encountered during the write is also returned.
+//
 // The Copy function uses WriterTo if available.
 type WriterTo interface {
 	WriteTo(w Writer) (n int64, err error)
 }
 
-// ReaderFrom is the interface that wraps the ReadFrom method.
+// ReadFrom reads data from r until EOF or error.
+// The return value n is the number of bytes read.
+// Any error except io.EOF encountered during the read is also returned.
+//
 // The Copy function uses ReaderFrom if available.
 type ReaderFrom interface {
 	ReadFrom(r Reader) (n int64, err error)
@@ -118,3 +124,34 @@ func (l *LimitedReader) Read(p []byte) (n int, err error) {
 }
 
 // END 9 OMIT
+
+// 10 OMIT
+func (t *teeReader) Read(p []byte) (n int, err error) {
+	n, err = t.r.Read(p)
+	if n > 0 {
+		if n, err := t.w.Write(p[:n]); err != nil {
+			return n, err
+		}
+	}
+	return
+}
+
+// END 10 OMIT
+
+// 11 OMIT
+func copyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error) {
+	// If the reader has a WriteTo method, use it to do the copy.
+	// Avoids an allocation and a copy.
+	if wt, ok := src.(WriterTo); ok {
+		return wt.WriteTo(dst)
+	}
+	// Similarly, if the writer has a ReadFrom method, use it to do the copy.
+	if rt, ok := dst.(ReaderFrom); ok {
+		return rt.ReadFrom(src)
+	}
+	if buf == nil {
+		buf = make([]byte, 32*1024)
+	}
+	// END 11 OMIT
+}
+

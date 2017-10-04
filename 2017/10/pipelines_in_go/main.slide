@@ -131,6 +131,7 @@ Based on more than 500 custom readers:
 
 * reader1|writer1 - TeeReader
 - io.TeeReader
+.code ./misc/interfaces.go /10 OMIT/,/END 10 OMIT/
 .play ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
 
 * reader1|writer1 - Only writing
@@ -142,10 +143,12 @@ Based on more than 500 custom readers:
 - `io.Copy` creates 32kb buffer by default
 .play ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
 
+* reader1|writer1 - io.Copy
+.code ./misc/interfaces.go /11 OMIT/,/END 11 OMIT/
+.link https://github.com/golang/go/issues/16474 #16474: proposal: io: CopyBuffer should avoid ReadFrom/WriteTo
+
 * reader1|writer1 - WriterTo and ReaderFrom
 .code ./misc/interfaces.go /7 OMIT/,/END 7 OMIT/
-.link https://golang.org/src/io/io.go?s=5697:6450#L163 GoDoc
-.link https://golang.org/src/io/io.go#L379 io.Copy
 
 .image ./images/gopher2.png
 
