@@ -36,17 +36,6 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	// 1 OMIT
-	pr, pw := io.Pipe() // HL
-	// uploading to S3
-	go func(data io.Reader) {
-		defer wg.Done()
-		defer pr.Close()
-		if err := uploadToS3(data); err != nil {
-			log.Fatal(err)
-		}
-	}(pr)
-
 	// raw data
 	c, err := http.Get("https://golang.org/robots.txt")
 	if err != nil {
@@ -54,13 +43,22 @@ func main() {
 	}
 	defer c.Body.Close()
 
-	http.Post()
-	// data compression
-	gz := gzip.NewWriter(pw)
+	// 1 OMIT
+	pipeReader, pipeWriter := io.Pipe() // HL
+	// uploading to S3
+	go func() {
+		defer wg.Done()
+		defer pipeReader.Close()                       // HL
+		if err := uploadToS3(pipeReader); err != nil { // HL
+			log.Fatal(err)
+		}
+	}()
+	gz := gzip.NewWriter(pipeWriter) // HL
 	io.Copy(gz, c.Body)
+
+	pipeWriter.Close() // HL
+	// END 1 OMIT
 	gz.Flush()
 	gz.Close()
-	pw.Close()
-	// END 1 OMIT
 	wg.Wait()
 }

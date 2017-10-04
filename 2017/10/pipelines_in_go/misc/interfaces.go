@@ -155,3 +155,7 @@ func copyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error) {
 	// END 11 OMIT
 }
 
+// 12 OMIT
+func Pipe() (*PipeReader, *PipeWriter)
+
+// END 12 OMIT
