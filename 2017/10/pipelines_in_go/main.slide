@@ -1,4 +1,4 @@
-Pipelines in Go 
+Pipelines in Go
 Based on io.Reader/io.Writer
 14 Oct 2017
 
@@ -22,15 +22,16 @@ Gopher, Juno
 .image ./images/reader.gif
 
 * io.Reader - How to?
-1. One of stdlib impl. ( e.g. bytes.Buffer )
+1. One of stdlib impl. ( e.g. `bytes.Reader` )
+.code ./misc/interfaces.go /13 OMIT/,/END 13 OMIT/
+
 2. Own implementation
 
 The most popular categories:
 
-- 20% connections
-- 6% buffers
-- 3% counting, stats
-- 2% progress
+- connections ( e.g android.statTrackingConn at camlistore/camlistore )
+- custom buffers ( e.g. http2.dataBuffer at golang/net )
+- bytes counting, progress info
 
 Based on more than 500 custom readers:
 .link https://superstas.github.io/io_stats/
@@ -47,6 +48,8 @@ Examples:
 
 
 * io.Reader#1 - Example#1
+`ioutil.ReadAll`
+.code ./misc/interfaces.go /14 OMIT/,/END 14 OMIT/
 - ReaderNegative
 .code ./code/reader_negative.go /1 OMIT/,/END 1 OMIT/
 .play -edit ./code/reader_negative.go /0 OMIT/,/END 0 OMIT/
@@ -54,13 +57,13 @@ Examples:
 .link https://github.com/golang/go/issues/22097 Issue#22097 bytes: have buffer.ReadFrom panic with better message
 
 * io.Reader#1 - Example#2
-- ReaderUnlimitedMemory
-.play ./code/reader_unlimited_memory.go /0 OMIT/,/END 0 OMIT/
+- ReaderInfinite
+.play ./code/reader_infinite.go /0 OMIT/,/END 0 OMIT/
 .link https://codereview.appspot.com/76400048/ bufio: fix bug that ReadFrom stops before EOF or error
 
 * io.Reader#1 - Example#3
-- ReaderInfinite
-.play ./code/reader_infinite.go /0 OMIT/,/END 0 OMIT/
+- ReaderUnlimitedMemory
+.play ./code/reader_unlimited_memory.go /0 OMIT/,/END 0 OMIT/
 
 * io.Reader#2
 .code ./misc/interfaces.go /2 OMIT/,/END 2 OMIT/
@@ -83,8 +86,8 @@ Examples:
 
 The most common mistakes
 
-- io.EOF never returns
-- a lot trust in wrapped io.Reader
+- never returning io.EOF
+- a lot of trust in wrapped io.Reader
 
 
 Based on more than 500 custom readers:
@@ -184,12 +187,12 @@ Let's imagine a case
 .link https://www.youtube.com/watch?v=LHZ2CAZE6Gs justforfunc #19: mastering io.Pipes
 .image ./images/gopher1.png
 
-* Other implementations
-.link https://github.com/andrewstuart/limio https://github.com/andrewstuart/limio - A rate limiting library
-.link https://github.com/mitchellh/ioprogress https://github.com/mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
-.link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
-.link https://github.com/davecheney/reader https://github.com/davecheney/reader - Open anything as an io.Reader
-.link https://github.com/facebookgo/counting https://github.com/facebookgo/counting - Counting for io.Reader/io.Writer
+#* Other implementations
+#.link https://github.com/andrewstuart/limio https://github.com/andrewstuart/limio - A rate limiting library
+#.link https://github.com/mitchellh/ioprogress https://github.com/mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
+#.link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
+#.link https://github.com/davecheney/reader https://github.com/davecheney/reader - Open anything as an io.Reader
+#.link https://github.com/facebookgo/counting https://github.com/facebookgo/counting - Counting for io.Reader/io.Writer
 
 * Conclusions
 - implement io.Reader/io.Writer as needed

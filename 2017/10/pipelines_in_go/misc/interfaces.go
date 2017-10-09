@@ -1,4 +1,6 @@
 // 0 OMIT
+import "io"
+
 // Reader is the interface that wraps the basic Read method.
 type Reader interface {
 	Read(p []byte) (n int, err error)
@@ -159,3 +161,17 @@ func copyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error) {
 func Pipe() (*PipeReader, *PipeWriter)
 
 // END 12 OMIT
+
+// 13 OMIT
+// NewReader returns a new Reader reading from b.
+func NewReader(b []byte) *Reader
+
+// END 13 OMIT
+
+// 14 OMIT
+// A successful call returns err == nil, not err == EOF. Because ReadAll is
+// defined to read from src until EOF, it does not treat an EOF from Read
+// as an error to be reported.
+func ReadAll(r io.Reader) ([]byte, error)
+
+// END 14 OMIT
