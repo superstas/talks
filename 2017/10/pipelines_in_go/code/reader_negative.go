@@ -11,11 +11,11 @@ type NegativeReader struct{}
 func (r *NegativeReader) Read(p []byte) (int, error) {
 	return -1, nil // HL
 }
+
 // END 0 OMIT
 
 func main() {
 	// 1 OMIT
-	r := new(NegativeReader)
-	ioutil.ReadAll(r)
+	ioutil.ReadAll(new(NegativeReader)) // HL
 	// END 1 OMIT
 }

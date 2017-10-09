@@ -29,8 +29,8 @@ Gopher, Juno
 
 The most popular categories:
 
-- connections ( e.g android.statTrackingConn at camlistore/camlistore )
-- custom buffers ( e.g. http2.dataBuffer at golang/net )
+- connections ( e.g *android.statTrackingConn* in `camlistore/camlistore` )
+- custom buffers ( e.g. *http2.dataBuffer* in `golang/net` )
 - bytes counting, progress info
 
 Based on more than 500 custom readers:
@@ -50,6 +50,8 @@ Examples:
 * io.Reader#1 - Example#1
 `ioutil.ReadAll`
 .code ./misc/interfaces.go /14 OMIT/,/END 14 OMIT/
+.link https://github.com/golang/go/issues/19660 Issue#19660: proposal: io/ioutil: rename to io/fileio or similar
+
 - ReaderNegative
 .code ./code/reader_negative.go /1 OMIT/,/END 1 OMIT/
 .play -edit ./code/reader_negative.go /0 OMIT/,/END 0 OMIT/
@@ -59,6 +61,8 @@ Examples:
 * io.Reader#1 - Example#2
 - ReaderInfinite
 .play ./code/reader_infinite.go /0 OMIT/,/END 0 OMIT/
+
+- `bufio.Bufio`/`bufio.Scanner` has *maxConsecutiveEmptyReads* = 100
 .link https://codereview.appspot.com/76400048/ bufio: fix bug that ReadFrom stops before EOF or error
 
 * io.Reader#1 - Example#3
@@ -88,9 +92,7 @@ The most common mistakes
 
 - never returning io.EOF
 - a lot of trust in wrapped io.Reader
-
-
-Based on more than 500 custom readers:
+.image ./images/errors.gif
 .link https://superstas.github.io/io_stats/
 
 * io.Writer
@@ -104,7 +106,7 @@ Based on more than 500 custom readers:
 - _0<=n<=len(p)_ - n - written bytes
 - writer must return error if it returns n < len(p)
 - writer mustn't modify p
-- don't retain buffer, copy it if needed
+- don't retain slice, copy it if needed
 
 
 * Implementations
@@ -121,7 +123,7 @@ Based on more than 500 custom readers:
 
 - read stdin via ioutil.ReadAll(io.Reader)
 .play ./code/pipelines/example0.go /1 OMIT/,/END 1 OMIT/
-
+.link https://github.com/golang/go/issues/13473 Issue#13473: proposal: os: Stdin, Stdout and Stderr should be interfaces
 
 * reader1|reader2 - stdin data limitation
 - io.LimitedReader wraps io.Reader
@@ -147,7 +149,7 @@ Based on more than 500 custom readers:
 
 * reader1|writer1 - WriterTo and ReaderFrom
 .code ./misc/interfaces.go /7 OMIT/,/END 7 OMIT/
-
+.link https://codereview.appspot.com/166041 https://codereview.appspot.com/166041
 .image ./images/gopher2.png
 
 * reader1|writer1 - io.Copy
@@ -187,12 +189,12 @@ Let's imagine a case
 .link https://www.youtube.com/watch?v=LHZ2CAZE6Gs justforfunc #19: mastering io.Pipes
 .image ./images/gopher1.png
 
-#* Other implementations
-#.link https://github.com/andrewstuart/limio https://github.com/andrewstuart/limio - A rate limiting library
-#.link https://github.com/mitchellh/ioprogress https://github.com/mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
-#.link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
-#.link https://github.com/davecheney/reader https://github.com/davecheney/reader - Open anything as an io.Reader
-#.link https://github.com/facebookgo/counting https://github.com/facebookgo/counting - Counting for io.Reader/io.Writer
+* Other implementations
+.link https://github.com/andrewstuart/limio https://github.com/andrewstuart/limio - A rate limiting library
+.link https://github.com/mitchellh/ioprogress https://github.com/mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
+.link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
+.link https://github.com/davecheney/reader https://github.com/davecheney/reader - Open anything as an io.Reader
+.link https://github.com/facebookgo/counting https://github.com/facebookgo/counting - Counting for io.Reader/io.Writer
 
 * Conclusions
 - implement io.Reader/io.Writer as needed
