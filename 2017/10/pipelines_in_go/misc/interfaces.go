@@ -1,6 +1,4 @@
 // 0 OMIT
-import "io"
-
 // Reader is the interface that wraps the basic Read method.
 type Reader interface {
 	Read(p []byte) (n int, err error)
@@ -175,3 +173,8 @@ func NewReader(b []byte) *Reader
 func ReadAll(r io.Reader) ([]byte, error)
 
 // END 14 OMIT
+
+// 15 OMIT
+func Copy(dst Writer, src Reader) (written int64, err error)
+
+// END 15 OMIT
