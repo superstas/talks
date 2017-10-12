@@ -11,7 +11,7 @@ Gopher, Juno
 - io.Reader
 - io.Writer
 - Pipelines ( _reader1|writer2|reader3|..._ )
-- Usage patterns
+- Pros & Cons
 
 .image ./images/gopher_0.png
 
@@ -44,7 +44,7 @@ Based on more than 500 custom readers:
 
 Examples:
 .link https://golang.org/src/bytes/buffer.go#L210 bytes.Buffer believes
-.link https://golang.org/src/bufio/bufio.go#L200 bufio.Reader doesn't believe
+.link https://codereview.appspot.com/6907060 Issue#4276: bufio: panic in ReadSlice ( Go 1.1 )
 
 
 * io.Reader#1 - Example#1
@@ -181,24 +181,25 @@ Let's imagine a case
 - there is no internal buffering
 - it supports multi-reading
 
-# Todo: cups phone image
+.link https://www.youtube.com/watch?v=LHZ2CAZE6Gs justforfunc #19: mastering io.Pipes
 
 * writer1|reader1 - io.Pipe using
 .play ./code/pipelines/example6.go /1 OMIT/,/END 1 OMIT/
 
-.link https://www.youtube.com/watch?v=LHZ2CAZE6Gs justforfunc #19: mastering io.Pipes
+.link https://github.com/golang/go/commit/371eda45582aea165131cc204e92bdbce3c95097?diff=split io: simplify pipe implementation
 .image ./images/gopher1.png
 
 * Other implementations
-.link https://github.com/andrewstuart/limio https://github.com/andrewstuart/limio - A rate limiting library
-.link https://github.com/mitchellh/ioprogress https://github.com/mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
-.link https://github.com/msoap/byline https://github.com/msoap/byline - Converter io.Reader to line-by-line reader
-.link https://github.com/davecheney/reader https://github.com/davecheney/reader - Open anything as an io.Reader
-.link https://github.com/facebookgo/counting https://github.com/facebookgo/counting - Counting for io.Reader/io.Writer
+.link https://golang.org/pkg/io/ io.MultiReader/io.MultiWriter in stdlib
+.link https://github.com/andrewstuart/limio andrewstuart/limio - A rate limiting library
+.link https://github.com/mitchellh/ioprogress mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
+.link https://github.com/disorganizer/brig/blob/master/util/std.go#L193 disorganizer/brig - Timeout reader and writer
+.link https://github.com/msoap/byline msoap/byline - Converter io.Reader to line-by-line reader
+.link https://github.com/davecheney/reader davecheney/reader - Open anything as an io.Reader
+.link https://github.com/facebookgo/counting facebookgo/counting - Counting for io.Reader/io.Writer
 
 * Conclusions
 - implement io.Reader/io.Writer as needed
 - don't forget about io.ReaderFrom/io.WriterTo
-- read documentation
-- stdlib has good implementations
+- stdlib has good implementations and documentation
 - don't hesitate to send issues
