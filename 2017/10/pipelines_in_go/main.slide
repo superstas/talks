@@ -173,6 +173,8 @@ Let's imagine a case
 
 - `aws-sdk-go` requires io.Reader as a body
 
+4. Pipeline: *reader|writer|reader*
+
 * writer1|reader1 - io.Pipe rocks
 .code ./misc/interfaces.go /12 OMIT/,/END 12 OMIT/
 
