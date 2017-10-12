@@ -126,13 +126,12 @@ The most common mistakes
 .link https://github.com/golang/go/issues/13473 Issue#13473: proposal: os: Stdin, Stdout and Stderr should be interfaces
 
 * reader1|reader2 - stdin data limitation
-- io.LimitedReader wraps io.Reader
 - it reads limited count of bytes
 .code ./misc/interfaces.go /9 OMIT/,/END 9 OMIT/
 
 - read limited stdin data
 .play ./code/pipelines/example1.go /1 OMIT/,/END 1 OMIT/
-
+.link https://github.com/golang/go/issues/22214  Issue#22214 io: LimitReader increases limit with negative Read count
 * reader1|writer1 - TeeReader
 - io.TeeReader
 .code ./misc/interfaces.go /10 OMIT/,/END 10 OMIT/
@@ -202,4 +201,4 @@ Let's imagine a case
 - don't forget about io.ReaderFrom/io.WriterTo
 - read documentation
 - stdlib has good implementations
-- contribute changes if needed
+- don't hesitate to send issues
