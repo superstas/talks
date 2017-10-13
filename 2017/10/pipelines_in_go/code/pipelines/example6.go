@@ -8,17 +8,20 @@ import (
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 func uploadToS3(body io.Reader) error {
-	region := "us-east-2"
-	bucketName, key := "test", "key"
+	region := "eu-central-1"
+	bucketName := "iopipetest"
+	fileName := "robots.txt.gz"
 
 	s3Sess := session.Must(session.NewSession(&aws.Config{
-		Region: &region,
+		Region:      &region,
+		Credentials: credentials.NewSharedCredentials("", "iotestbucket"),
 	}))
 
 	s3Client := s3.New(s3Sess)
@@ -26,7 +29,7 @@ func uploadToS3(body io.Reader) error {
 
 	_, err := s3Uploader.Upload(&s3manager.UploadInput{
 		Bucket: &bucketName,
-		Key:    &key,
+		Key:    &fileName,
 		Body:   body,
 	})
 	return err
@@ -54,11 +57,10 @@ func main() {
 		}
 	}()
 	gz := gzip.NewWriter(pipeWriter) // HL
-	io.Copy(gz, c.Body)
-
-	pipeWriter.Close() // HL
+	io.Copy(gz, c.Body)              // HL
 	// END 1 OMIT
 	gz.Flush()
 	gz.Close()
+	pipeWriter.Close()
 	wg.Wait()
 }

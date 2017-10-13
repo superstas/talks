@@ -200,7 +200,7 @@ Let's imagine a case
 .link https://github.com/davecheney/reader davecheney/reader - Open anything as an io.Reader
 .link https://github.com/facebookgo/counting facebookgo/counting - Counting for io.Reader/io.Writer
 
-* Conclusions
+* Conclusion
 - implement io.Reader/io.Writer as needed
 - don't forget about io.ReaderFrom/io.WriterTo
 - stdlib has good implementations and documentation
