@@ -30,7 +30,7 @@ Gopher, Juno
 The most popular categories:
 
 - connections ( e.g *android.statTrackingConn* in `camlistore/camlistore` )
-- custom buffers ( e.g. *http2.dataBuffer* in `golang/net` )
+- custom buffers ( e.g. *http2.dataBuffer* in `golang.org/x/net` )
 - bytes counting, progress info
 
 Based on more than 500 custom readers:
@@ -42,7 +42,6 @@ Based on more than 500 custom readers:
 - _0<=n<=len(p)_ - one of the most important rule
 - stdlib wrappers *believe* ( sometimes ) to implementations
 
-Examples:
 .link https://golang.org/src/bytes/buffer.go#L210 bytes.Buffer believes
 .link https://codereview.appspot.com/6907060 Issue#4276: bufio: panic in ReadSlice ( Go 1.1 )
 
