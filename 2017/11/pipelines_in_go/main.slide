@@ -1,0 +1,206 @@
+Pipelines in Go
+Based on io.Reader/io.Writer
+25 Nov 2017
+
+Afanasev Stanislav
+Gopher, Juno
+@superstas88
+
+* Agenda
+
+- io.Reader
+- io.Writer
+- Pipelines ( _reader1|writer2|reader3|..._ )
+- Pros & Cons
+
+.image ./images/gopher_0.png
+
+* io.Reader
+
+* io.Reader
+.code ./misc/interfaces.go /0 OMIT/,/END 0 OMIT/
+.image ./images/reader.gif
+
+* io.Reader - How to?
+1. One of stdlib impl. ( e.g. `bytes.Reader` )
+.code ./misc/interfaces.go /13 OMIT/,/END 13 OMIT/
+
+2. Own implementation
+
+The most popular categories:
+
+- connections ( e.g *android.statTrackingConn* in `camlistore/camlistore` )
+- custom buffers ( e.g. *http2.dataBuffer* in `golang.org/x/net` )
+- bytes counting, progress info
+
+Based on more than 500 custom readers:
+.link https://superstas.github.io/io_stats/
+
+* io.Reader#1
+.code ./misc/interfaces.go /1 OMIT/,/END 1 OMIT/
+- it's a strict contract!
+- _0<=n<=len(p)_ - one of the most important rule
+- stdlib wrappers *believe* ( sometimes ) to implementations
+
+.link https://golang.org/src/bytes/buffer.go#L210 bytes.Buffer believes
+.link https://codereview.appspot.com/6907060 Issue#4276: bufio: panic in ReadSlice ( Go 1.1 )
+
+
+* io.Reader#1 - Example#1
+`ioutil.ReadAll`
+.code ./misc/interfaces.go /14 OMIT/,/END 14 OMIT/
+.link https://github.com/golang/go/issues/19660 Issue#19660: proposal: io/ioutil: rename to io/fileio or similar
+
+- ReaderNegative
+.code ./code/reader_negative.go /1 OMIT/,/END 1 OMIT/
+.play -edit ./code/reader_negative.go /0 OMIT/,/END 0 OMIT/
+.link https://play.golang.org/p/ynkzXrJWAP io.Reader with unsigned int
+.link https://github.com/golang/go/issues/22097 Issue#22097 bytes: have buffer.ReadFrom panic with better message
+
+* io.Reader#1 - Example#2
+- ReaderInfinite
+.play ./code/reader_infinite.go /0 OMIT/,/END 0 OMIT/
+`bufio.Bufio`/`bufio.Scanner` has *maxConsecutiveEmptyReads* = 100
+
+- ReaderUnlimitedMemory
+.play ./code/reader_unlimited_memory.go /0 OMIT/,/END 0 OMIT/
+
+.link https://codereview.appspot.com/76400048/ bufio: fix bug that ReadFrom stops before EOF or error
+.link https://tip.golang.org/src/strings/builder.go strings/builder Go 1.10
+
+* io.Reader#2
+.code ./misc/interfaces.go /2 OMIT/,/END 2 OMIT/
+
+- *io.EOF* - "EOF is the error returned by Read when no more input is available"
+- *io.ErrUnexpectedEOF*
+- *io.ErrNoProgress* - "...usually the sign of a broken io.Reader implementation"
+
+.link https://golang.org/src/io/io.go#L315 ErrUnexpectedEOF in io.ReadAtLeast
+
+* io.Reader#3
+.code ./misc/interfaces.go /4 OMIT/,/END 4 OMIT/
+- `return`0,`nil` - *isn't*equal*to* `io.EOF`
+
+ return 0<=n<=len(p), nil - reading is not finished, read again
+ return 0<=n<=len(p), io.EOF - reading is finished
+ return 0, io.EOF - reading is finished ( a special case )
+
+* io.Reader. Mistakes
+
+The most common mistakes
+
+- never returning io.EOF
+- a lot of trust in wrapped io.Reader
+.image ./images/errors.gif
+.link https://superstas.github.io/io_stats/
+
+* io.Writer
+
+* io.Writer
+.code ./misc/interfaces.go /6 OMIT/,/END 6 OMIT/
+.image ./images/writer.gif
+
+* io.Writer
+.code ./misc/interfaces.go /6_1 OMIT/,/END 6_1 OMIT/
+- _0<=n<=len(p)_ - n - written bytes
+- writer must return error if it returns n < len(p)
+- writer mustn't modify p
+- don't retain slice, copy it if needed
+
+
+* Implementations
+
+* Implementations of "io" pkg. Circular dendrogram
+.image ./images/implementations_qr_code.png
+.link https://superstas.github.io/io_interfaces_1.9.html https://superstas.github.io/io_interfaces_1.9.html
+
+* Pipelines
+
+* reader1|reader2 - stdin data
+- os.Stdin is a *os.File that implements io.Reader
+.code ./code/pipelines/readers/readers.go /1 OMIT/,/END 1 OMIT/
+
+- read stdin via ioutil.ReadAll(io.Reader)
+.play ./code/pipelines/example0.go /1 OMIT/,/END 1 OMIT/
+.link https://github.com/golang/go/issues/13473 Issue#13473: proposal: os: Stdin, Stdout and Stderr should be interfaces
+
+* reader1|reader2 - stdin data limitation
+- it reads limited count of bytes
+.code ./misc/interfaces.go /9 OMIT/,/END 9 OMIT/
+
+- read limited stdin data
+.play ./code/pipelines/example1.go /1 OMIT/,/END 1 OMIT/
+.link https://github.com/golang/go/issues/22214  Issue#22214 io: LimitReader increases limit with negative Read count
+* reader1|writer1 - TeeReader
+- io.TeeReader
+.code ./misc/interfaces.go /10 OMIT/,/END 10 OMIT/
+.play ./code/pipelines/example2.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1 - Only writing
+- Beginner way
+.play ./code/pipelines/example3.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1 - io.Copy
+.code ./misc/interfaces.go /15 OMIT/,/END 15 OMIT/
+- use `io.Copy`/`io.CopyBuffer`/`io.CopyN`
+- `io.Copy` creates 32kb buffer by default
+.play ./code/pipelines/example4.go /1 OMIT/,/END 1 OMIT/
+
+* reader1|writer1 - WriterTo and ReaderFrom
+.code ./misc/interfaces.go /7 OMIT/,/END 7 OMIT/
+.link https://codereview.appspot.com/166041 https://codereview.appspot.com/166041
+.image ./images/gopher2.png
+
+* reader1|writer1 - io.Copy
+.code ./misc/interfaces.go /11 OMIT/,/END 11 OMIT/
+.link https://github.com/golang/go/issues/16474 Issue#16474 - proposal: io: CopyBuffer should avoid ReadFrom/WriteTo
+.link https://go-review.googlesource.com/c/go/+/60630 CL#60630 - io: Improve performance of CopyN
+
+
+* writer1|reader1
+Let's imagine a case
+
+1. We have a piece of data
+
+- io.Reader
+
+2. We need compress it with compress/gzip
+
+- `compress/gzip` requires io.Writer, implements io.Writer
+
+3. We need to upload it to AWS S3
+
+- `aws-sdk-go` requires io.Reader as a body
+
+4. Pipeline: *reader|writer|reader*
+
+* writer1|reader1 - io.Pipe rocks
+.code ./misc/interfaces.go /12 OMIT/,/END 12 OMIT/
+
+- it creates a synchronous in-memory pipe
+- thread-safe
+- there is no internal buffering
+- it supports multi-reading
+
+.link https://www.youtube.com/watch?v=LHZ2CAZE6Gs justforfunc #19: mastering io.Pipes
+
+* writer1|reader1 - io.Pipe using
+.play ./code/pipelines/example6.go /1 OMIT/,/END 1 OMIT/
+
+.link https://github.com/golang/go/commit/371eda45582aea165131cc204e92bdbce3c95097?diff=split io: simplify pipe implementation
+.image ./images/gopher1.png
+
+* Other implementations
+.link https://golang.org/pkg/io/ io.MultiReader/io.MultiWriter in stdlib
+.link https://github.com/andrewstuart/limio andrewstuart/limio - A rate limiting library
+.link https://github.com/mitchellh/ioprogress mitchellh/ioprogress - Progress bar for io.Reader/io.Writer
+.link https://github.com/disorganizer/brig/blob/master/util/std.go#L193 disorganizer/brig - Timeout reader and writer
+.link https://github.com/msoap/byline msoap/byline - Converter io.Reader to line-by-line reader
+.link https://github.com/davecheney/reader davecheney/reader - Open anything as an io.Reader
+.link https://github.com/facebookgo/counting facebookgo/counting - Counting for io.Reader/io.Writer
+
+* Conclusion
+- implement io.Reader/io.Writer as needed
+- don't forget about io.ReaderFrom/io.WriterTo
+- stdlib has good implementations and documentation
+- don't hesitate to send issues
