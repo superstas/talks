@@ -9,10 +9,73 @@ Gopher, Juno
 * Agenda
 
 - Why?
-- How?
-- What? 
-
-.image ./images/goandfixme.png
+- How to?
+- What to contribute?
 
 * Why?
 
+* Why? - Level up your knowledge!
+.image ./images/level_up.jpg
+
+* Why? - New achievements and awards!
+- a record in the file *CONTRIBUTORS*
+- a special "Contributor" badge on Github.com
+.image ./images/badge.png
+
+- career growth ?
+
+* Why? - Just for fun!
+.image ./images/justforfun.jpg
+
+* How to?
+
+* How to? - Step 1. Preparing
+
+0. Install git
+1. Get sources
+
+  $ git clone https://go.googlesource.com/go
+  $ cd go
+
+2. Configure Git to use Gerrit
+3. Sign the CLA
+
+or use *go-contrib-init*
+
+  $ go get -u golang.org/x/tools/cmd/go-contrib-init
+  $ cd /code/to/edit
+  $ go-contrib-init
+
+.link https://golang.org/doc/contribute.html https://golang.org/doc/contribute.html
+
+* How to? - Step 2. Choose a problem and discuss your design!
+
+0. Choose a problem/issue/proposal
+1. Discuss design via GitHub or proposal ( if needed )
+2. Make a change ( style, tests )
+3. Push to the repo
+
+ $ git mail
+
+4. Set the reviewers
+
+*Pay* *attention* *to:*
+- commit message
+- comments
+
+* How to? - Step 3. Wait for the review!
+
+.image ./images/review.png
+
+* What to contribute? 0_o
+
+* What to contribute?
+
+- Your own ideas/problems
+- Existing issues at https://github.com/golang/go/issues
+- *Help* *wanted* issues
+- Simple issues in source code
+
+* Start here!
+.image ./images/goandfixme.png
+.caption  [[https://www.goandfix.me][www.goandfix.me]]
