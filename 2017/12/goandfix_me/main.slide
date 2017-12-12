@@ -4,6 +4,7 @@ Simple guide
 
 Afanasev Stanislav
 Gopher, Juno
+https://www.goandfix.me/
 @superstas88
 
 * Agenda
@@ -11,6 +12,8 @@ Gopher, Juno
 - Why?
 - How to?
 - What to contribute?
+.image ./images/intro.gif
+.caption  [[https://www.howtobuybit.coin][he wants to buy Bitcoin but doesn't know how :(]]
 
 * Why?
 
@@ -21,8 +24,8 @@ Gopher, Juno
 - a record in the file *CONTRIBUTORS*
 - a special "Contributor" badge on Github.com
 .image ./images/badge.png
-
-- career growth ?
+- looking for a job? It's your chance!
+.image ./images/gophman.png
 
 * Why? - Just for fun!
 .image ./images/justforfun.jpg
@@ -48,34 +51,34 @@ or use *go-contrib-init*
 
 .link https://golang.org/doc/contribute.html https://golang.org/doc/contribute.html
 
-* How to? - Step 2. Choose a problem and discuss your design!
+* How to? - Step 2.
 
-0. Choose a problem/issue/proposal
-1. Discuss design via GitHub or proposal ( if needed )
-2. Make a change ( style, tests )
-3. Push to the repo
+- Choose a problem/issue/proposal
+- Discuss design via GitHub or proposal ( if needed )
+- Make a change ( style, tests )
+- Push to the repo
 
  $ git mail
 
-4. Set the reviewers
+- Set the reviewers
 
-*Pay* *attention* *to:*
-- commit message
-- comments
+
+.image ./images/wait_cr.gif
 
 * How to? - Step 3. Wait for the review!
 
 .image ./images/review.png
 
-* What to contribute? 0_o
+* What to contribute? (•ิ_•ิ)
 
-* What to contribute?
+* What to contribute? (•ิ_•ิ)
 
 - Your own ideas/problems
 - Existing issues at https://github.com/golang/go/issues
 - *Help* *wanted* issues
 - Simple issues in source code
+.image ./images/step3.png
 
-* Start here!
+* www.goandfix.me - Start here!
+
 .image ./images/goandfixme.png
-.caption  [[https://www.goandfix.me][www.goandfix.me]]
