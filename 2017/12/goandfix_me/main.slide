@@ -1,5 +1,5 @@
 How to contribute to Go?
-Simple guide
+www.goandfix.me
 13 Dec 2017
 
 Afanasev Stanislav
@@ -55,11 +55,15 @@ or use *go-contrib-init*
 
 - Choose a problem/issue/proposal
 - Discuss design via GitHub or proposal ( if needed )
-- Make a change ( style, tests )
+- Make a change and commit following a message format:
+
+ pkg: short description of a patch
+
+ details of the patch
+
+ Fixes #159
+
 - Push to the repo
-
- $ git mail
-
 - Set the reviewers
 
 
@@ -74,8 +78,14 @@ or use *go-contrib-init*
 * What to contribute? (•ิ_•ิ)
 
 - Your own ideas/problems
+
+↓↓↓  _these_options_are_not_trivial_ ↓↓↓
+
 - Existing issues at https://github.com/golang/go/issues
 - *Help* *wanted* issues
+
+↑↑↑ _these_options_are_not_trivial_ ↑↑↑
+
 - Simple issues in source code
 .image ./images/step3.png
 
