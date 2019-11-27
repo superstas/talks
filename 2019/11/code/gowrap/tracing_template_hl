@@ -5,8 +5,7 @@ type {{$decorator}} struct {
   _name string // HL
   {{.Interface.Type}}
 }
-
-// END 0 OMIT 
+// END 0 OMIT
 
 // 1 OMIT
 // New{{$decorator}} returns {{$decorator}}

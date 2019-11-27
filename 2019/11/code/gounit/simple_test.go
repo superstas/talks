@@ -16,18 +16,14 @@ func TestService_AddUser(t *testing.T) {
 		u   *User
 	}
 	tests := []struct {
-		name    string
-		init    func(t minimock.Tester) *Service
-		inspect func(r *Service, t *testing.T) //inspects *Service after execution of AddUser
-
-		args func(t minimock.Tester) args
-
+		name       string
+		init       func(t minimock.Tester) *Service
+		args       func(t minimock.Tester) args
 		wantErr    bool
 		inspectErr func(err error, t *testing.T) //use for more precise error evaluation
 	}{
 		//TODO: Add test cases // HL
 	}
-
 	//...
 	// END 0 OMIT
 	for _, tt := range tests {
@@ -78,8 +74,9 @@ func TestService_AddUser1(t *testing.T) {
 			init: func(t minimock.Tester) *Service {
 				return NewService(
 					NewUserStorageMock(t).
-						UserByEmailMock.Expect(context.Background(), "test@test.com"). // HL
-						Return(nil, ErrUserNotFound).                                  // HL
+						UserByEmailMock.
+						Expect(context.Background(), "test@test.com"). // HL
+						Return(nil, ErrUserNotFound).                  // HL
 
 						CreateMock.Return(nil), // HL
 				)

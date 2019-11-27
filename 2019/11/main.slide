@@ -75,15 +75,11 @@ Usage
 * Minimock. Expect/Inspect/Return
 Checking arguments
 .code ./code/minimock/minimock_features_test.go /2 OMIT/,/END 2 OMIT/
-Checking second element
-.code ./code/minimock/minimock_features_test.go /3 OMIT/,/END 3 OMIT/
 
 * Minimock. When/Then 
 Usage of When/Then helpers
 .code ./code/minimock/minimock_features_test.go /4 OMIT/,/END 4 OMIT/
-One-line syntax is allowed ( that's 🔥 for table tests )  
-
-	NewFormatterMock(mc).When("Hello %s!", "world").Then("Hello world!").When("Hi %s!", "there").Then("Hi there!")
+- One-line syntax is allowed ( that's 🔥 for table tests )  
 
 
 * Minimock. Finish
@@ -181,64 +177,24 @@ Generated code
 
 * Table tests
 
-
 * Table tests. The problem
 .code ./code/gounit/simple.go  /0 OMIT/,/END 0 OMIT/
 .code ./code/gounit/simple.go  /1 OMIT/,/END 1 OMIT/
-
-* Table tests. The problem
-	
-	func TestAddUser(t *testing.T) {
-		tests := []struct {
-				name string
-				userStorage UserStorage
-				user User
-				wantErr err
-		}{
-				//Your test cases here
-		}
-		for _, tt := range tests {
-			t.Run(tt.name, func(t *testing.T) {
-				service := NewService(tt.userStorage)
-				err := service.AddUser(context.Background(), tt.user)		
-				if !tt.wantErr {
-				        t.Errorf("AddUser unexpected err: %s", err)
-				}	 
-			})
-		}
-	}
-
-
-.link https://github.com/cweill/gotests
 .link https://github.com/hexdigest/gounit
 
-* Table tests. Gounit
-_Templates:_
-- default
-- testify
-- minimock
-
-_There_are_plugins_for:_
-- Vim
-- Emacs
-- Atom
-- Sublime
-* should work with IDEs
-
+* Table tests. Gounit. Minimock template
 Usage
 
 	> gounit template use minimock 
 	> gounit gen -i ./simple.go -f AddUser
 
-* Table tests. Minimock template
-
+Generated test function
 .code ./code/gounit/simple_test.go  /0 OMIT/,/END 0 OMIT/
 
 
 * Table tests. Test case
 
 .code ./code/gounit/simple_test.go  /1 OMIT/,/END 1 OMIT/
-
 
 * Table tests. Tools
 _Templates:_
@@ -257,7 +213,19 @@ _There_are_plugins_for:_
 .link https://github.com/hexdigest/gounit
 
 
-* What else?
+* Do you need it?
+
+* Do you need it?
+.image ./images/is_it_worth_the_time_2x_rsz.png
+.link https://xkcd.com/1205/
+
+* Conclusion
+- Don't waste your time doing it manually.
+- Generate as much as you can.
+
+.image ./images/slides_qr_code.png
+
+* What else? - Links
 - Genval
 It generates boilerplate for *Validate* method
 
@@ -273,14 +241,4 @@ It generates boilerplate for *Validate* method
 It generates SQL statements and prepares it.
 .link https://github.com/hexdigest/prep
 
-* Do you need it?
 
-* Do you need it?
-.image ./images/is_it_worth_the_time_2x_rsz.png
-.link https://xkcd.com/1205/
-
-* Conclusion
-- Don't waste your time doing it manually.
-- Generate as much as you can.
-
-.image ./images/slides_qr_code.png
