@@ -1,0 +1,25 @@
+// 1 OMIT
+{{ $decorator := (or .Vars.DecoratorName (printf "%sWithTracing" .Interface.Name)) }}
+// {{$decorator}} implements {{.Interface.Type}} interface instrumented with opencencus
+type {{$decorator}} struct {
+  _name string
+  {{.Interface.Type}}
+}
+
+// New{{$decorator}} returns {{$decorator}}
+func New{{$decorator}} (name string, base {{.Interface.Type}}) {{$decorator}} {
+  return {{$decorator}} { _name: name, {{.Interface.Name}}: base}
+}
+
+{{range $method := .Interface.Methods}}
+  // {{$method.Name}} implements {{$.Interface.Type}}
+  func (_d {{$decorator}}) {{$method.Declaration}} {
+	{{if $method.AcceptsContext}}
+		ctx, span := trace.StartSpan(ctx, _d._name + ".{{$.Interface.Type}}.{{$method.Name}}", 
+	trace.WithSpanKind(trace.SpanKindClient))
+		defer span.End()
+	{{end}}
+	{{$method.Pass (printf "_d.%s." $.Interface.Name) }}
+  }
+{{end}}
+// END 1 OMIT

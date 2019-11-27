@@ -1,8 +1,286 @@
-Init
+Code generation in Go.
+Tips & Tricks.
 28 Nov 2019
 
-Afanasev Stanislav
+Stanislav Afanasev
 Gopher, MessageBird
 @superstas88
 
-* Title
+* 
+
+.image ./images/too_busy_rsz.png
+
+* Agenda
+
+- Mocks
+- Wrappers
+- Table tests
+
+
+.image ./images/gopher_0.png
+
+* Mocks. The problem.
+
+* Mocks. The problem.
+1. UserStorage interface.
+.code ./code/user_storage.go /0 OMIT/,/END 0 OMIT/
+2. Service.
+.code ./code/user_storage.go /1 OMIT/,/END 1 OMIT/
+
+* Mocks. The problem#0
+.code ./code/user_storage_mock_1.go /2 OMIT/,/END 2 OMIT/
+⏰ _~_1_minute_
+
+* Mocks. The problem#1 
+.code ./code/user_storage_mock_2.go /3 OMIT/,/END 3 OMIT/
+
+* Mocks. The problem#2
+.code ./code/user_storage_mock_2.go /4 OMIT/,/END 4 OMIT/
+⏰ _~_10_minutes_ 
+
+* Mocks. The problem#3
+.code ./code/user_storage_mock_3.go /5 OMIT/,/END 5 OMIT/
+⏰ _~_4_minutes_
+
+* Mocks. This is a real pain 😭
+.code ./code/k8s/k8s_client_set_interface.go /0 OMIT/,/END 0 OMIT/
+⏰ _~_I'm_crying_hours_
+.link https://github.com/kubernetes/client-go/blob/master/kubernetes/clientset.go#L68
+
+* Mocks. Generate it with Minimock
+- Expect/Inspect; When/Then helpers
+- Counters
+- Finish
+- It puts _go_generate_ instruction to mocks!
+
+.link https://github.com/gojuno/minimock
+
+.image ./images/gopher_2.png
+
+* Minimock. Example
+io.ReadCloser
+
+	// ReadCloser is the interface that groups the basic Read and Close methods.
+	type ReadCloser interface {
+		Reader
+		Closer
+	}
+
+CustomReader
+.code ./code/minimock/minimock_features_test.go /1 OMIT/,/END 1 OMIT/
+Usage
+
+	minimock -i io.ReadCloser
+
+* Minimock. Expect/Inspect/Return
+Checking arguments
+.code ./code/minimock/minimock_features_test.go /2 OMIT/,/END 2 OMIT/
+Checking second element
+.code ./code/minimock/minimock_features_test.go /3 OMIT/,/END 3 OMIT/
+
+* Minimock. When/Then 
+Usage of When/Then helpers
+.code ./code/minimock/minimock_features_test.go /4 OMIT/,/END 4 OMIT/
+One-line syntax is allowed ( that's 🔥 for table tests )  
+
+	NewFormatterMock(mc).When("Hello %s!", "world").Then("Hello world!").When("Hi %s!", "there").Then("Hi there!")
+
+
+* Minimock. Finish
+Checks whether all mocks are being used
+.code ./code/minimock/minimock_features_test.go /5 OMIT/,/END 5 OMIT/
+
+* Minimock is nice
+- Expect/Inspect; When/Then helpers
+- Counters
+- Finish
+- It puts _go_generate_ instruction to mocks!
+
+.link https://github.com/gojuno/minimock
+
+Alternatives
+.link https://github.com/golang/mock
+.link https://github.com/matryer/moq
+.link https://github.com/vektra/mockery
+
+.image ./images/gopher_2.png
+
+
+* Wrappers
+
+* Wrappers. The problem.
+UserStorage interface.
+.code ./code/gowrap/sender.go /0 OMIT/,/END 0 OMIT/
+
+Example
+- Several implementations: Push and Email.
+- Instrumenting with tracing.
+
+	smsSender := sms.New()
+	emailSender := email.New()
+
+	sender := sender.New(
+		sender.NewSenderWithTracing(smsSender, "SMS"),
+		sender.NewSenderWithTracing(emailSender, "Email"),
+	)
+
+* Wrappers. SenderWithTracing.
+What I'd want to get
+.code ./code/gowrap/sender.go /1 OMIT/,/END 1 OMIT/
+
+* Gowrap.
+
+- A lot of prepared templates ( e.g., fallback, logrus, prometheus, etc. )
+- Custom templates
+- It puts _go_generate_ instruction to generated decorators
+
+
+.link https://github.com/hexdigest/gowrap
+.image ./images/gopher_1.png
+
+* Gowrap. Templating
+.code ./code/gowrap/tracing_template /1 OMIT/,/END 1 OMIT/
+
+* Gowrap. Templating is easy.
+.image ./images/glaza_vitekaut_rsz.jpeg
+
+* Gowrap. Templating
+Type definition
+.code ./code/gowrap/tracing_template_hl /0 OMIT/,/END 0 OMIT/
+
+Constructor
+.code ./code/gowrap/tracing_template_hl /1 OMIT/,/END 1 OMIT/
+
+* Gowrap. Templating
+Methods
+.code ./code/gowrap/tracing_template_hl /2 OMIT/,/END 2 OMIT/
+
+Usage
+
+	gowrap gen -p . -i Sender -t tracing_template -o sender_tracing.go
+
+* Gowrap. Templating
+Generated code
+.code ./code/gowrap/sender_tracing.go  /0 OMIT/,/END 0 OMIT/
+
+.link https://blog.golang.org/generate
+
+* Gowrap. Templating
+Generated code
+.code ./code/gowrap/sender_tracing.go  /1 OMIT/,/END 1 OMIT/
+
+* Gowrap!
+
+- A lot of prepared templates ( e.g., fallback, logrus, prometheus, etc. )
+- Custom templates
+- It puts _go_generate_ instruction to generated decorators
+
+
+.link https://github.com/hexdigest/gowrap
+.image ./images/gopher_1.png
+
+* Table tests
+
+
+* Table tests. The problem
+.code ./code/gounit/simple.go  /0 OMIT/,/END 0 OMIT/
+.code ./code/gounit/simple.go  /1 OMIT/,/END 1 OMIT/
+
+* Table tests. The problem
+	
+	func TestAddUser(t *testing.T) {
+		tests := []struct {
+				name string
+				userStorage UserStorage
+				user User
+				wantErr err
+		}{
+				//Your test cases here
+		}
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				service := NewService(tt.userStorage)
+				err := service.AddUser(context.Background(), tt.user)		
+				if !tt.wantErr {
+				        t.Errorf("AddUser unexpected err: %s", err)
+				}	 
+			})
+		}
+	}
+
+
+.link https://github.com/cweill/gotests
+.link https://github.com/hexdigest/gounit
+
+* Table tests. Gounit
+_Templates:_
+- default
+- testify
+- minimock
+
+_There_are_plugins_for:_
+- Vim
+- Emacs
+- Atom
+- Sublime
+* should work with IDEs
+
+Usage
+
+	> gounit template use minimock 
+	> gounit gen -i ./simple.go -f AddUser
+
+* Table tests. Minimock template
+
+.code ./code/gounit/simple_test.go  /0 OMIT/,/END 0 OMIT/
+
+
+* Table tests. Test case
+
+.code ./code/gounit/simple_test.go  /1 OMIT/,/END 1 OMIT/
+
+
+* Table tests. Tools
+_Templates:_
+- default
+- testify
+- minimock ( gounit only )
+
+_There_are_plugins_for:_
+- Vim
+- Emacs
+- Atom
+- Sublime
+* should work with IDEs
+
+.link https://github.com/cweill/gotests
+.link https://github.com/hexdigest/gounit
+
+
+* What else?
+- Genval
+It generates boilerplate for *Validate* method
+
+	type User struct {
+		Name   string   `validate:"max_len=64"`
+		Age    uint     `validate:"min=18"`
+		Emails []string `validate:"min_items=1,item=[min_len=5]"`
+	}
+
+.link https://github.com/gojuno/genval
+
+- Prep
+It generates SQL statements and prepares it.
+.link https://github.com/hexdigest/prep
+
+* Do you need it?
+
+* Do you need it?
+.image ./images/is_it_worth_the_time_2x_rsz.png
+.link https://xkcd.com/1205/
+
+* Conclusion
+- Don't waste your time doing it manually.
+- Generate as much as you can.
+
+.image ./images/slides_qr_code.png

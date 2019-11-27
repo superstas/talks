@@ -1,0 +1,11 @@
+--2019-11-22 22:12:48--  https://raw.githubusercontent.com/hexdigest/gounit/master/templates/minimock
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 151.101.36.133
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|151.101.36.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 2094 (2.0K) [text/plain]
+Saving to: ‘minimock.1’
+
+     0K ..                                                    100% 1.83M=0.001s
+
+2019-11-22 22:12:48 (1.83 MB/s) - ‘minimock.1’ saved [2094/2094]
+
