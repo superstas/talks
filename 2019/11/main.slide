@@ -14,7 +14,6 @@ Gopher, MessageBird
 
 - Mocks
 - Wrappers
-- Table tests
 
 
 .image ./images/gopher_0.png
@@ -175,44 +174,6 @@ Generated code
 .link https://github.com/hexdigest/gowrap
 .image ./images/gopher_1.png
 
-* Table tests
-
-* Table tests. The problem
-.code ./code/gounit/simple.go  /0 OMIT/,/END 0 OMIT/
-.code ./code/gounit/simple.go  /1 OMIT/,/END 1 OMIT/
-.link https://github.com/hexdigest/gounit
-
-* Table tests. Gounit. Minimock template
-Usage
-
-	> gounit template use minimock 
-	> gounit gen -i ./simple.go -f AddUser
-
-Generated test function
-.code ./code/gounit/simple_test.go  /0 OMIT/,/END 0 OMIT/
-
-
-* Table tests. Test case
-
-.code ./code/gounit/simple_test.go  /1 OMIT/,/END 1 OMIT/
-
-* Table tests. Tools
-_Templates:_
-- default
-- testify
-- minimock ( gounit only )
-
-_There_are_plugins_for:_
-- Vim
-- Emacs
-- Atom
-- Sublime
-* should work with IDEs
-
-.link https://github.com/cweill/gotests
-.link https://github.com/hexdigest/gounit
-
-
 * Do you need it?
 
 * Do you need it?
@@ -228,17 +189,15 @@ _There_are_plugins_for:_
 * What else? - Links
 - Genval
 It generates boilerplate for *Validate* method
-
-	type User struct {
-		Name   string   `validate:"max_len=64"`
-		Age    uint     `validate:"min=18"`
-		Emails []string `validate:"min_items=1,item=[min_len=5]"`
-	}
-
 .link https://github.com/gojuno/genval
 
 - Prep
 It generates SQL statements and prepares it.
 .link https://github.com/hexdigest/prep
+
+- Table tests
+.link https://github.com/cweill/gotests
+.link https://github.com/hexdigest/gounit
+
 
 
