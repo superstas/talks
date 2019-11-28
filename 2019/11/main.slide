@@ -199,5 +199,3 @@ It generates SQL statements and prepares it.
 .link https://github.com/cweill/gotests
 .link https://github.com/hexdigest/gounit
 
-
-
