@@ -1,4 +1,263 @@
-Title.
-Description.
+Code generation in Go.
+Tips & Tricks.
 25 Apr 2020
 
+Stanislav Afanasev
+Gopher, Beat
+@superstas88
+
+* 
+
+.image ./images/too_busy_rsz.png
+
+* Agenda
+
+- Mocks (GoMock & Minimock)
+- Wrappers
+- Misc.
+
+
+.image ./images/gopher_0.png
+
+* Mocks. The problem.
+
+* Mocks. The problem.
+1. UserStorage interface.
+
+.code ./code/user_storage.go /0 OMIT/,/END 0 OMIT/
+
+2. Service.
+
+.code ./code/user_storage.go /1 OMIT/,/END 1 OMIT/
+
+* Mocks. The problem
+
+.code ./code/user_storage_mock.go /5 OMIT/,/END 5 OMIT/
+
+* Mocks. Here's a real problem!
+
+.code ./code/k8s/k8s_client_set_interface.go /0 OMIT/,/END 0 OMIT/
+
+.link https://github.com/kubernetes/client-go/blob/master/kubernetes/clientset.go#L68
+
+* Mocks. ~6000 LOC 
+
+.image ./images/mocks_problem.gif
+
+
+* Mocks. Generate it!
+- GoMock
+.link https://github.com/golang/mock
+
+- Minimock
+.link https://github.com/gojuno/minimock
+
+.code ./code/minimock/sender.go /0 OMIT/,/END 0 OMIT/
+
+- GoMock
+
+	$> mockgen -source sender.go -package gomock -destination sender_mock_test.go Sender
+
+- Minimock 
+
+	$> minimock Sender
+
+
+* Mocks. MultiSender
+
+.code ./code/minimock/sender.go /1 OMIT/,/END 1 OMIT/
+
+.image ./images/gopher_2.png
+
+* Mocks. Basic
+
+- GoMock 
+
+.code ./code/gomock/gomock_features_test.go /0 OMIT/,/END 0 OMIT/
+
+- Minimock 
+
+.code ./code/minimock/minimock_features_test.go /0 OMIT/,/END 0 OMIT/
+
+
+* Pecan
+.image ./images/pecans_rsz.jpg
+
+* Mocks. One-line syntax Table-driven tests
+
+.code ./code/minimock/minimock_features_test.go /1 OMIT/,/END 1 OMIT/
+
+.link https://github.com/golang/go/wiki/TableDrivenTests
+.link ttps://medium.com/@cep21/closure-driven-tests-an-alternative-style-to-table-driven-tests-in-go-628a41497e5e Closure driven tests: an alternative style to table driven tests in go
+
+* Mocks. Expect
+
+- GoMock
+
+.code ./code/gomock/gomock_features_test.go /1 OMIT/,/END 1 OMIT/
+
+- Minimock
+
+.code ./code/minimock/minimock_features_test.go /2 OMIT/,/END 2 OMIT/
+
+* Mocks. Controller
+
+- GoMock
+
+.code ./code/gomock/gomock_features_test.go /3 OMIT/,/END 3 OMIT/
+
+- Minimock
+
+.code ./code/minimock/minimock_features_test.go /3 OMIT/,/END 3 OMIT/
+
+
+* Mocks. Misc.
+- GoMock
+
+.code ./code/gomock/gomock_features_test.go /4 OMIT/,/END 4 OMIT/
+
+- Minimock
+
+.code ./code/minimock/minimock_features_test.go /4 OMIT/,/END 4 OMIT/
+
+* Mocks. Conslusions
+- A lot of features 
+- Easy to integrate / Easy to use
+- Don't waste your time!
+
+
+.link https://github.com/golang/mock
+.link https://github.com/gojuno/minimock
+
+.image ./images/gopher_2.png
+
+
+* Wrappers
+
+* Wrappers. The problem.
+Sender interface.
+
+.code ./code/gowrap/sender.go /0 OMIT/,/END 0 OMIT/
+
+Example
+- SMS and Email implementations
+- Instrumenting with tracing
+
+	smsSender := sms.New()
+	emailSender := email.New()
+
+	sender := NewMultiSender(
+		sender.NewSenderWithTracing(smsSender, "SMS"),
+		sender.NewSenderWithTracing(emailSender, "Email"),
+	)
+
+* Wrappers. SenderWithTracing.
+What I'd want to get
+
+.code ./code/gowrap/sender.go /1 OMIT/,/END 1 OMIT/
+
+* Gowrap.
+
+- A lot of prepared templates ( e.g., fallback, logrus, prometheus, etc. )
+- Custom templates
+- It puts _go_generate_ instruction to generated decorators
+
+
+.link https://github.com/hexdigest/gowrap
+.image ./images/gopher_1.png
+
+* Gowrap. Templating
+
+.code ./code/gowrap/tracing_template /1 OMIT/,/END 1 OMIT/
+
+* Gowrap. Templating is easy.
+
+.image ./images/glaza_vitekaut_rsz.jpeg
+
+* Gowrap. Templating
+Type definition
+
+.code ./code/gowrap/tracing_template_hl /0 OMIT/,/END 0 OMIT/
+
+Constructor
+
+.code ./code/gowrap/tracing_template_hl /1 OMIT/,/END 1 OMIT/
+
+* Gowrap. Templating
+Methods
+
+.code ./code/gowrap/tracing_template_hl /2 OMIT/,/END 2 OMIT/
+
+Usage
+
+	gowrap gen -p . -i Sender -t tracing_template -o sender_tracing.go
+
+* Gowrap. Templating
+Generated code
+
+.code ./code/gowrap/sender_tracing.go  /0 OMIT/,/END 0 OMIT/
+
+.link https://blog.golang.org/generate
+
+* Gowrap. Templating
+Generated code
+
+.code ./code/gowrap/sender_tracing.go  /1 OMIT/,/END 1 OMIT/
+
+* Gowrap. Templating
+
+- AcceptsContext
+- ReturnsError
+- HasParams
+- HasResults
+
+.link https://godoc.org/github.com/hexdigest/gowrap/generator#Method
+
+* Gowrap!
+
+- A lot of prepared templates ( e.g., fallback, logrus, prometheus, etc. )
+- Custom templates
+- It puts _go_generate_ instruction to generated decorators
+
+
+.link https://github.com/hexdigest/gowrap
+.image ./images/gopher_1.png
+
+* Do you need it?
+
+* Do you need it?
+.image ./images/is_it_worth_the_time_2x_rsz.png
+.link https://xkcd.com/1205/
+
+
+* What else? - Links
+
+- Fast JSON marshal/unmarshal
+
+It generates marshal/unmarshal methods Go structs to/from JSON without the use of reflection. 
+
+.link https://github.com/mailru/easyjson
+
+- Table tests
+It generates table tests boilerplate code
+
+.link https://github.com/cweill/gotests
+
+- Genval
+It generates boilerplate for *Validate* method
+
+.link https://github.com/gojuno/genval
+
+* Conclusion
+- Don't waste your time doing it manually.
+- Use right tools and generate as much as you can.
+
+* Thank you. Questions?
+
+Stanislav Afanasev, Beat
+
+.link https://twitter.com/superstas88
+
+.image ./images/slides.png
+
+We're hiring: *beat.careers*
